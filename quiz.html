@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Che surf c'era?</title>
+<link rel="icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Mono:wght@400;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Stessi colori dell'app: tavola delle maree, chiara e scura */
+  :root {
+    --paper: #e8f0ea; --paper-2: #f3f7f3; --ink: #123e36; --ink-soft: #46655c; --ink-faint: #7f9a91;
+    --line: rgba(18, 62, 54, .14); --line-strong: rgba(18, 62, 54, .32);
+    --sea: #2f9c7f; --sea-ink: #1d6f59; --sea-tint: rgba(47, 156, 127, .13); --on-sea: #f3f7f3;
+    --swell: #2f9c7f; --swell-soft: #7fbfab; --wind: #d0573a; --wind-tint: rgba(208, 87, 58, .12);
+    --sun: #e2ad2f; --storm-ink: #3a2a00; --water: #d3e6df; --sand: #e5d7b5; --coast: #8a7652;
+    --display: "Archivo", "Arial Narrow", sans-serif; --body: "Work Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0e231e; --paper-2: #14302a; --ink: #e3eee8; --ink-soft: #9fbab0; --ink-faint: #64837a;
+      --line: rgba(227, 238, 232, .11); --line-strong: rgba(227, 238, 232, .28);
+      --sea: #4cc29f; --sea-ink: #7fd8bc; --sea-tint: rgba(76, 194, 159, .15); --on-sea: #0e231e;
+      --swell: #4cc29f; --swell-soft: #3d8a74; --wind: #f08362; --wind-tint: rgba(240, 131, 98, .14);
+      --sun: #f0c45a; --storm-ink: #2b1f00; --water: #163a33; --sand: #3b3627; --coast: #b9a67a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e231e; --paper-2: #14302a; --ink: #e3eee8; --ink-soft: #9fbab0; --ink-faint: #64837a;
+    --line: rgba(227, 238, 232, .11); --line-strong: rgba(227, 238, 232, .28);
+    --sea: #4cc29f; --sea-ink: #7fd8bc; --sea-tint: rgba(76, 194, 159, .15); --on-sea: #0e231e;
+    --swell: #4cc29f; --swell-soft: #3d8a74; --wind: #f08362; --wind-tint: rgba(240, 131, 98, .14);
+    --sun: #f0c45a; --storm-ink: #2b1f00; --water: #163a33; --sand: #3b3627; --coast: #b9a67a;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--paper); }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--body); }
+  main { max-width: 760px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left)) 40px; }
+  header { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line-strong); }
+  header img { width: 40px; height: 40px; border-radius: 10px; }
+  header b { display: block; font: 800 22px/1.1 var(--display); font-stretch: 115%; text-transform: uppercase; }
+  header small { font: 500 11px var(--mono); letter-spacing: .08em; color: var(--ink-soft); text-transform: uppercase; }
+  header .count { margin-left: auto; font: 600 12px var(--mono); color: var(--ink-soft); text-align: right; }
+  .intro { margin: 14px 0; padding: 12px 14px; border-radius: 10px; background: var(--sea-tint); font-size: 14px; }
+  .intro b { color: var(--sea-ink); }
+  .card { background: var(--paper-2); border: 1px solid var(--line-strong); border-radius: 14px; padding: 16px; margin-top: 14px; }
+  .eyebrow { font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sea-ink); }
+  h1 { margin: 2px 0 0; font: 800 28px/1.05 var(--display); font-stretch: 110%; }
+  .date { color: var(--ink-soft); margin-top: 2px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; margin-top: 10px; }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+  svg.rose { width: 100%; max-width: 340px; display: block; margin: 0 auto; }
+  .lbl { font: 600 11px var(--mono); paint-order: stroke; stroke: var(--water); stroke-width: 3px; }
+  .models h6 { margin: 8px 0 4px; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .mrow { display: grid; grid-template-columns: 14px 1fr auto 34px; gap: 6px; align-items: center; font-size: 13px; }
+  .mrow b { font: 600 12px var(--mono); }
+  .mrow i { font: 400 11px var(--mono); color: var(--ink-faint); font-style: normal; text-align: right; }
+  .arr { width: 12px; height: 12px; }
+  .day { margin-top: 14px; overflow-x: auto; }
+  .day table { border-collapse: collapse; width: 100%; min-width: 480px; font: 500 12px var(--mono); text-align: center; }
+  .day th { font: 600 10px var(--mono); letter-spacing: .06em; color: var(--ink-faint); text-align: left; padding: 4px 6px; white-space: nowrap; }
+  .day td { padding: 5px 3px; border-top: 1px solid var(--line); white-space: nowrap; }
+  .day td.now, .day th.now { background: var(--sea-tint); }
+  /* La colonna con i nomi delle righe resta ferma mentre la tabella scorre di lato */
+  .day th { position: sticky; left: 0; z-index: 1; background: var(--paper); box-shadow: 4px 0 6px -4px rgba(0,0,0,.35); }
+  .day tr.mark th { box-shadow: none; }
+  .day thead td { font-weight: 600; color: var(--ink-soft); }
+  .day thead td.now { color: var(--sea-ink); }
+  .day .arr { vertical-align: -1px; margin-right: 2px; }
+  .session-time { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .session-time .clock { flex: none; padding: 8px 12px; border-radius: 10px; background: var(--sea); color: var(--on-sea);
+    font: 700 26px/1 var(--mono); letter-spacing: -.02em; }
+  .session-time b { display: block; font: 700 16px var(--body); }
+  .session-time small { color: var(--ink-soft); }
+  .day tr.mark td { border-top: 0; padding: 2px 3px 0; font: 700 9px var(--mono); letter-spacing: .06em; color: var(--sea-ink); }
+  .day thead tr:nth-child(2) td.now { font-weight: 700; }
+  .decide { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) { .decide { grid-template-columns: 1fr; } }
+  .decide .flat { color: var(--ink-soft); }
+  .decide .pickbtn span { background: var(--sea); color: var(--on-sea); }
+  .decide .pickbtn.on { border: 2px solid var(--sea); background: var(--sea-tint); }
+  #vote-box { margin-top: 14px; }
+  h1.vs { font-size: 26px; }
+  h1.vs i { font: 600 14px var(--mono); color: var(--ink-faint); font-style: normal; text-transform: uppercase; margin: 0 4px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+  .spot { min-width: 0; padding: 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper);
+    transition: opacity .2s, border-color .2s; }
+  .spot h1 { font-size: 22px; }
+  .spot.picked { border-color: var(--sea); }
+  .spot.dimmed { opacity: .55; }
+  .spot details { margin-top: 6px; font-size: 13px; }
+  .spot summary { cursor: pointer; color: var(--sea-ink); font-weight: 600; }
+  h6.sub { margin: 10px 0 0; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .choose { display: block; width: 100%; margin-top: 10px; padding: 12px; cursor: pointer; font: 700 16px var(--body);
+    color: var(--on-sea); background: var(--sea); border: 0; border-radius: 10px; }
+  .spot.picked .choose { background: var(--sea-ink); }
+  .spot.picked .choose::after { content: " ✓"; }
+  .lvchip { margin-top: 4px; padding: 3px 8px; cursor: pointer; font: 600 11px var(--mono); color: var(--sea-ink);
+    background: var(--sea-tint); border: 0; border-radius: 6px; }
+  .levels button { padding: 14px; }
+  .levels button span { width: 44px; height: 44px; font-size: 24px; background: var(--sea-tint); }
+  .levels b { display: block; font: 700 17px var(--body); }
+  .levels small { display: block; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+  label.notes { margin: 6px 0 12px; }
+  input.missing { border-color: var(--wind); box-shadow: 0 0 0 2px var(--wind-tint); }
+  .ask { margin-top: 16px; }
+  .ask h2 { margin: 0 0 8px; font: 800 19px var(--display); font-stretch: 108%; }
+  .fields { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 520px) { .fields { grid-template-columns: 1fr; } }
+  label { display: block; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  input, textarea { display: block; width: 100%; margin-top: 4px; padding: 9px 10px; font: 500 15px var(--body); color: var(--ink);
+    background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; }
+  textarea { resize: vertical; min-height: 42px; }
+  .votes { display: grid; gap: 8px; }
+  .votes button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; text-align: left; cursor: pointer;
+    font: 600 16px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 10px;
+    transition: transform .08s, background .15s; }
+  .votes button:hover { background: var(--sea-tint); }
+  .votes button:active { transform: scale(.98); }
+  .votes button span { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px;
+    font: 700 17px var(--mono); background: var(--sea-tint); color: var(--sea-ink); }
+  .votes button.v5 span { background: var(--sea); color: var(--on-sea); }
+  .votes button.pass { border-style: dashed; color: var(--wind); }
+  .votes button.pass span { background: var(--wind-tint); color: var(--wind); }
+  .votes button:disabled { opacity: .5; cursor: wait; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(80px); padding: 10px 16px; border-radius: 10px;
+    background: var(--sea); color: var(--on-sea); font-weight: 600; transition: transform .25s; pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .foot { margin-top: 18px; font-size: 12px; color: var(--ink-faint); text-align: center; }
+  .foot a { color: var(--sea-ink); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.svg" alt="">
+    <div><b>Che surf c'era?</b><small>Ndo namo? · allena le previsioni</small></div>
+    <div class="count"><div id="count"></div><div id="level-chip"></div></div>
+  </header>
+
+  <p class="intro">Ti mostro <b>due spot nello stesso momento</b>, con cosa dicevano davvero i modelli quel giorno dei mesi
+    passati. Guardali come guarderesti Windy la sera prima: <b>scegli dove saresti andato</b> e dai il voto alla session.
+    Con le tue risposte l'app impara a leggere le previsioni come chi surfa qui, e ne esce una classifica degli spot.</p>
+
+  <section class="card" id="card"><p>Carico una situazione…</p></section>
+  <p class="foot">Dati: Open-Meteo, Copernicus Marine, costa © OpenStreetMap · <a href="./">torna alle previsioni</a></p>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// Google Form che riceve le risposte: Spot (= situazione: spot, giorno, ora), Voto, Note
+const FORM = {
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSdbZttxeHq0yka-qRIBLm4xUhulBfeqSCzx5ens7xV4iQZHHA/formResponse",
+  spot: "entry.1340852868", vote: "entry.578710216", notes: "entry.1262838276",
+  compare: "entry.887417853", name: "entry.1868492607", level: "entry.1243801351",
+};
+// Livello di chi risponde (lo stesso salvataggio dell'app: lì cambia gli spot preferiti e la taglia d'onda)
+const LEVELS = [["principiante", "Principiante", "Voglio stare in piedi il più possibile", "🐣"],
+                ["intermedio", "Intermedio", "Voglio prendere più onde possibile", "🏄"],
+                ["esperto", "Esperto", "Vado a cazzo duro", "🔥"]];
+const LEVEL_KEY = "ndo.level";
+// Voto della session nello spot scelto (piatto e troppo attivo si dicono prima, senza scegliere lo spot)
+const VOTES = [[1, "Poche speranze"], [2, "Fiducioso"], [3, "Ci sarà mezza onda, quasi sicuro"],
+               [4, "Sarà buono"], [5, "Epic, sono già lì"]];
+const SHORT = { ecmwf_wam: "ECMWF", ecmwf_wam025: "ECMWF25", cmems_medwav: "Copernicus", meteofrance_wave: "MeteoFr",
+  ewam: "EWAM", ncep_gfswave016: "GFS", italia_meteo_arpae_icon_2i: "ICON-2I", meteofrance_arome_france: "AROME",
+  icon_eu: "ICON-EU", ecmwf_ifs: "ECMWF", ecmwf_aifs025_single: "AIFS", meteofrance_arpege_europe: "ARPEGE",
+  ukmo_global_deterministic_10km: "UKMO", gfs_seamless: "GFS" };
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
+const $ = id => document.getElementById(id);
+const f = (v, n = 1) => v == null ? "–" : Number(v).toFixed(n);
+const compass = d => d == null ? "" : COMPASS[Math.round(d / 22.5) % 16];
+const store = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+                set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+let scenarios = [], current = null;
+const coastCache = {};
+
+function arrowSvg(dir, color) {
+  return dir == null ? "" : `<svg class="arr" viewBox="-6 -6 12 12"><g transform="rotate(${(dir + 180) % 360})"><path d="M0,-5 L3.5,2.5 L0,1 L-3.5,2.5 Z" fill="${color}"/></g></svg>`;
+}
+
+// Costa vera da OpenStreetMap, come nell'app (la terra sta a sinistra del verso della costa)
+function coastMap(spot, coast, c, R) {
+  const scale = R / coast.radius_m, k = Math.cos(spot.lat * Math.PI / 180);
+  const xy = ([la, lo]) => [c + (lo - spot.lon) * 111320 * k * scale, c - (la - spot.lat) * 110540 * scale];
+  const fmt = pts => pts.map(p => p.map(v => v.toFixed(1)).join(",")).join(" ");
+  const far = 6 * R, near = 1.25 * R, dist = q => Math.hypot(q[0] - c, q[1] - c);
+  const unit = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], n = Math.hypot(dx, dy) || 1; return [dx / n, dy / n]; };
+  let land = "", lines = "";
+  for (const chain of coast.coast) {
+    const p = chain.map(xy);
+    if (p.length < 2) continue;
+    const closed = chain[0][0] === chain.at(-1)[0] && chain[0][1] === chain.at(-1)[1];
+    if (closed) {
+      if (p.some(q => dist(q) < near)) {
+        land += `<polygon points="${fmt(p)}" fill="var(--sand)"/>`;
+        lines += `<polyline points="${fmt(p)}" fill="none" stroke="var(--coast)" stroke-width="1.6"/>`;
+      }
+      continue;
+    }
+    const inside = p.map((q, i) => dist(q) < near ? i : -1).filter(i => i >= 0);
+    if (!inside.length) continue;
+    const run = p.slice(Math.max(0, inside[0] - 1), Math.min(p.length, inside.at(-1) + 2));
+    if (run.length < 2) continue;
+    if (dist(run[0]) < R || dist(run.at(-1)) < R) {
+      lines += `<polyline points="${fmt(run)}" fill="none" stroke="var(--coast)" stroke-width="1.6"/>`;
+      continue;
+    }
+    const d0 = unit(run[1], run[0]), d1 = unit(run.at(-2), run.at(-1));
+    const s = [run[0][0] + d0[0] * far, run[0][1] + d0[1] * far], e = [run.at(-1)[0] + d1[0] * far, run.at(-1)[1] + d1[1] * far];
+    const left = d => [d[1], -d[0]], l1 = left(d1), l0 = left([-d0[0], -d0[1]]);
+    land += `<polygon points="${fmt([s, ...run, e, [e[0] + l1[0] * far, e[1] + l1[1] * far], [s[0] + l0[0] * far, s[1] + l0[1] * far]])}" fill="var(--sand)"/>`;
+    lines += `<polyline points="${fmt(run)}" fill="none" stroke="var(--coast)" stroke-width="1.6"/>`;
+  }
+  const piers = (coast.piers || []).map(pp => `<polyline points="${fmt(pp.map(xy))}" fill="none" stroke="var(--coast)" stroke-width="2.6" stroke-linecap="round"/>`).join("");
+  return land + lines + piers;
+}
+
+function rose(s, uid) {
+  const c = 130, R = 112, pt = (deg, r) => [c + r * Math.sin(deg * Math.PI / 180), c - r * Math.cos(deg * Math.PI / 180)];
+  const coast = coastCache[s.spot.id];
+  let base;
+  if (coast && coast.coast.length) base = coastMap(s.spot, coast, c, R);
+  else {
+    const land = (s.spot.facing + 180) % 360, [ax, ay] = pt(land - 90, R), [bx, by] = pt(land + 90, R);
+    base = `<path d="M${ax},${ay} A${R},${R} 0 0 1 ${bx},${by} Z" fill="var(--sand)"/>`;
+  }
+  // Frecce: dal lato da cui arrivano verso lo spot. Modelli sottili, media spessa ed etichettata.
+  const arrow = (dir, len, color, w, op, dash) => {
+    if (dir == null) return "";
+    const hw = 3 + w;
+    return `<g transform="rotate(${dir} ${c} ${c})" opacity="${op}"><line x1="${c}" x2="${c}" y1="${c - 16 - len}" y2="${c - 16}" stroke="${color}" stroke-width="${w}" stroke-linecap="round" ${dash ? 'stroke-dasharray="4 3"' : ""}/>
+      <path d="M${c},${c - 15} L${c - hw},${c - 17 - hw * 2.4} L${c + hw},${c - 17 - hw * 2.4} Z" fill="${color}"/></g>`;
+  };
+  const m = s.models, n = s.now;
+  let arrows = "";
+  for (const v of Object.values(m.swell)) arrows += arrow(v[2], Math.min(88, v[0] * 44), "var(--swell)", 1.3, .3);
+  for (const v of Object.values(m.wave)) arrows += arrow(v[2], Math.min(88, v[0] * 44), "var(--swell-soft)", 1.3, .3, true);
+  for (const v of Object.values(m.wind)) arrows += arrow(v[2], Math.min(92, 16 + v[0] * 2.6), "var(--wind)", 1.3, .3);
+  const sd = n.sd ?? n.d, sh = n.sh ?? n.h, sLen = Math.min(92, sh * 46), wLen = Math.min(96, 16 + n.ws * 2.8);
+  arrows += arrow(sd, sLen, "var(--swell)", 5, 1) + arrow(n.wd, wLen, "var(--wind)", 5, 1);
+  // Etichetta dentro il disegno: la x tiene conto della lunghezza del testo (mono 11px ≈ 6.7 px a carattere),
+  // così le scritte lunghe non escono dal bordo sul telefono
+  const label = (dir, len, color, text, dy = 0) => {
+    if (dir == null) return "";
+    const [x, y] = pt(dir, Math.min(16 + len + 11, R - 6));
+    const half = text.length * 3.4 + 4;
+    const cx = Math.max(half, Math.min(260 - half, x));
+    const cy = Math.max(14, Math.min(250, y + 4 + dy));
+    return `<text class="lbl" x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" fill="${color}" text-anchor="middle">${text}</text>`;
+  };
+  // Swell e vento dalla stessa parte: le etichette si sovrappongono, quella della swell scende di una riga
+  const close = sd != null && n.wd != null && Math.abs(((sd - n.wd + 540) % 360) - 180) < 40;
+  const dyS = close ? (Math.abs(sLen - wLen) < 20 ? 14 : 0) : 0;
+  const ticks = [["N", 0], ["E", 90], ["S", 180], ["O", 270]].map(([l, d]) => { const [x, y] = pt(d, R + 11); return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-family="IBM Plex Mono" font-weight="600" font-size="11" fill="var(--ink-soft)">${l}</text>`; }).join("");
+  return `<svg class="rose" viewBox="0 0 260 270" role="img" aria-label="Mappa di ${s.spot.name}: swell ${f(sh)} metri, vento ${f(n.ws, 0)} nodi">
+    <defs><clipPath id="clip-${uid}"><circle cx="${c}" cy="${c}" r="${R}"/></clipPath></defs>
+    <circle cx="${c}" cy="${c}" r="${R}" fill="var(--water)"/>
+    <g clip-path="url(#clip-${uid})">${base}</g>
+    <circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="var(--line-strong)"/>
+    <circle cx="${c}" cy="${c}" r="${R / 2}" fill="none" stroke="var(--line)" stroke-dasharray="2 4"/>
+    ${arrows}
+    ${label(sd, sLen, "var(--swell)", `SWELL ${f(sh)} m ${f(n.sp ?? n.p, 0)}s`, dyS)}${label(n.wd, wLen, "var(--wind)", `VENTO ${f(n.ws, 0)} kn`)}
+    <circle cx="${c}" cy="${c}" r="6" fill="var(--ink)" stroke="var(--paper)" stroke-width="2"/>
+    ${ticks}
+    <g font-family="Work Sans" font-size="10" fill="var(--ink-soft)">
+      <line x1="40" y1="262" x2="56" y2="262" stroke="var(--swell)" stroke-width="3"/><text x="60" y="265">swell</text>
+      <line x1="104" y1="262" x2="120" y2="262" stroke="var(--wind)" stroke-width="3"/><text x="124" y="265">vento</text>
+      <text x="226" y="265" text-anchor="end" font-size="8" fill="var(--ink-faint)">${coast && coast.coast.length ? "2.5 km · © OSM" : ""}</text>
+    </g>
+  </svg>`;
+}
+
+function modelList(m) {
+  const rows = (entries, color, fmt) => entries.map(([id, v]) => `<div class="mrow" style="color:${color}">${arrowSvg(v[2], color)}
+      <span>${SHORT[id] || id}</span><b>${fmt(v)}</b><i>${compass(v[2])}</i></div>`).join("");
+  const swell = rows(Object.entries(m.swell), "var(--swell)", v => `${f(v[0])} m ${f(v[1], 0)} s`)
+              + rows(Object.entries(m.wave), "var(--swell-soft)", v => `${f(v[0])} m ${f(v[1], 0)} s*`);
+  const wind = rows(Object.entries(m.wind), "var(--wind)", v => `${f(v[0], 0)} kn`);
+  return `<div class="models"><h6>Swell per modello</h6>${swell}
+    ${Object.keys(m.wave).length ? `<div style="font-size:11px;color:var(--ink-faint)">* onda totale: il modello non separa la swell</div>` : ""}
+    <h6>Vento per modello</h6>${wind}</div>`;
+}
+
+function dayTable(s) {
+  const cols = s.day;
+  const cell = (r, html) => `<td class="${r.hour === nearestHour(s) ? "now" : ""}">${html}</td>`;
+  const row = (name, fn) => `<tr><th>${name}</th>${cols.map(r => cell(r, fn(r))).join("")}</tr>`;
+  return `<div class="day"><table>
+    <thead><tr class="mark"><th></th>${cols.map(r => `<td class="${r.hour === nearestHour(s) ? "now" : ""}">${r.hour === nearestHour(s) ? "SESSION ▼" : ""}</td>`).join("")}</tr>
+      <tr><th>Ora</th>${cols.map(r => `<td class="${r.hour === nearestHour(s) ? "now" : ""}">${String(r.hour).padStart(2, "0")}</td>`).join("")}</tr></thead>
+    <tbody>
+      ${row("Onda m", r => f(r.h))}
+      ${row("Swell m", r => `${arrowSvg(r.sd, "var(--swell)")}${f(r.sh)}`)}
+      ${row("Periodo s", r => f(r.sp ?? r.p))}
+      ${row("Vento kn", r => `${arrowSvg(r.wd, "var(--wind)")}${f(r.ws, 0)}`)}
+      ${row("Raffiche", r => f(r.wg, 0))}
+    </tbody></table></div>`;
+}
+// La colonna della session (la tabella è ogni 3 ore come Windy, più l'ora della session)
+const nearestHour = s => s.day.reduce((best, r) => Math.abs(r.hour - s.hour) < Math.abs(best - s.hour) ? r.hour : best, s.day[0]?.hour);
+
+let chosen = null;  // indice dello spot scelto nella coppia
+
+const hh = h => `${String(h).padStart(2, "0")}:00`;
+
+function spotCard(v, k, hour) {
+  const n = v.now, view = { ...v, hour };
+  return `<article class="spot" data-k="${k}">
+    <div class="eyebrow">${k === 0 ? "Spot A" : "Spot B"} · session alle ${hh(hour)}</div>
+    <h1>${v.spot.name}</h1>
+    <div class="date">swell <b>${f(n.sh ?? n.h)} m</b> ${f(n.sp ?? n.p)} s da ${compass(n.sd ?? n.d)} · onda ${f(n.h)} m ·
+      vento <b>${f(n.ws, 0)} kn</b> da ${compass(n.wd)}, raffiche ${f(n.wg, 0)}</div>
+    ${rose(view, k)}
+    <details><summary>Modelli uno per uno</summary>${modelList(v.models)}</details>
+    <h6 class="sub">La giornata</h6>
+    ${dayTable(view)}
+  </article>`;
+}
+
+async function show(s) {
+  current = s;
+  chosen = null;
+  await Promise.all(s.spots.map(async v => {
+    if (!(v.spot.id in coastCache))
+      coastCache[v.spot.id] = await fetch(`data/coast/${v.spot.id}.json`).then(r => r.ok ? r.json() : null).catch(() => null);
+  }));
+  const when = new Date(`${s.date}T12:00`).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const [a, b] = s.spots.map(v => v.spot.name.split(" (")[0]);
+  $("card").innerHTML = `
+    <div class="session-time"><span class="clock">${hh(s.hour)}</span><div><b>Surf session alle ${hh(s.hour)}</b><small>${when}</small></div></div>
+    <h1 class="vs">${a} <i>vs</i> ${b}</h1>
+    <p class="date">Guarda i due spot come guarderesti Windy la sera prima: <b>dove andresti alle ${hh(s.hour)}?</b></p>
+    <div class="pair">${s.spots.map((v, k) => spotCard(v, k, s.hour)).join("")}</div>
+    <div class="ask" id="ask">
+      <label class="notes">Note (facoltative, prima di scegliere)<textarea id="notes" rows="1" placeholder="Es. troppo vento da mare, la swell gira nel pomeriggio…"></textarea></label>
+      <h2>Alle ${hh(s.hour)} che fai?</h2>
+      <div class="votes decide">
+        <button type="button" class="pass" data-skip="piatto"><span>〰</span>Non entro, sarà piatto</button>
+        <button type="button" class="pass" data-skip="attivo"><span>✕</span>Non entro, troppo attivo</button>
+        <button type="button" class="pickbtn" data-choose="0"><span>A</span>Scelgo ${a}</button>
+        <button type="button" class="pickbtn" data-choose="1"><span>B</span>Scelgo ${b}</button>
+      </div>
+      <div id="vote-box" hidden>
+        <h2 id="ask-title"></h2>
+        <div class="votes">
+          ${VOTES.map(([v, txt]) => `<button type="button" class="v${v}" data-vote="${v}"><span>${v}</span>${txt}</button>`).join("")}
+        </div>
+      </div>
+    </div>`;
+  // Sul telefono la tabella scorre di lato: parte con la colonna della session in vista
+  document.querySelectorAll(".day").forEach(day => {
+    const col = day.querySelector("thead td.now");
+    if (col) day.scrollLeft = Math.max(0, col.offsetLeft - day.clientWidth / 2 + col.offsetWidth / 2);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function choose(k) {
+  chosen = k;
+  document.querySelectorAll(".spot").forEach(el => {
+    el.classList.toggle("picked", Number(el.dataset.k) === k);
+    el.classList.toggle("dimmed", Number(el.dataset.k) !== k);
+  });
+  document.querySelectorAll(".decide [data-choose]").forEach(b => b.classList.toggle("on", Number(b.dataset.choose) === k));
+  $("ask-title").textContent = `Com'è la session a ${current.spots[k].spot.name.split(" (")[0]} alle ${hh(current.hour)}?`;
+  $("vote-box").hidden = false;
+  $("vote-box").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function next() {
+  const seen = new Set(store.get("quiz.seen", []));
+  let pool = scenarios.filter(s => !seen.has(s.id));
+  if (!pool.length) { store.set("quiz.seen", []); pool = scenarios; }
+  show(pool[Math.floor(Math.random() * pool.length)]);
+}
+
+function toast(text) {
+  $("toast").textContent = text;
+  $("toast").classList.add("show");
+  setTimeout(() => $("toast").classList.remove("show"), 1600);
+}
+
+function updateCount() {
+  const n = store.get("quiz.done", 0);
+  $("count").textContent = n ? `${n} ${n === 1 ? "risposta" : "risposte"}` : "";
+}
+
+async function vote(value) {
+  const name = store.get("quiz.name", ""), notes = $("notes").value.trim();  // nome chiesto all'inizio
+  document.querySelectorAll(".votes button").forEach(b => b.disabled = true);
+  const body = new URLSearchParams();
+  // Spot = lo spot scelto ("passo" se troppo attivo per tutti e due); Confronto = coppia, giorno e ora.
+  // Finché il modulo non ha le colonne Confronto e Nome, la coppia va nel campo Spot e il nome nelle note.
+  const pick = value === "attivo" || value === "piatto" ? value : current.spots[chosen].spot.id;
+  if (FORM.compare) { body.append(FORM.spot, pick); body.append(FORM.compare, current.id); }
+  else body.append(FORM.spot, `${pick} | ${current.id}`);
+  // Voto solo numerico (1-5): "piatto" e "attivo" stanno già nella colonna Spot. Una colonna mista
+  // numeri/parole il foglio la legge male (le parole spariscono).
+  if (typeof value === "number") body.append(FORM.vote, String(value));
+  if (FORM.name && name) body.append(FORM.name, name);
+  if (FORM.level) body.append(FORM.level, store.get(LEVEL_KEY, ""));
+  const text = [!FORM.name && name && `[${name}]`, notes].filter(Boolean).join(" ");
+  if (text) body.append(FORM.notes, text.slice(0, 500));
+  try {
+    // Google Form: la risposta non è leggibile (no-cors); si considera inviata se la rete risponde
+    await fetch(FORM.url, { method: "POST", mode: "no-cors", body });
+    store.set("quiz.seen", [...store.get("quiz.seen", []), current.id]);
+    store.set("quiz.done", store.get("quiz.done", 0) + 1);
+    updateCount();
+    toast(typeof value === "string" ? "Segnato ✓ ecco la prossima" : "Grazie ✓ ecco la prossima");
+    next();
+  } catch {
+    toast("Invio non riuscito: controlla la connessione");
+    document.querySelectorAll(".votes button").forEach(b => b.disabled = false);
+  }
+}
+
+function askLevel() {
+  $("card").innerHTML = `<div class="eyebrow">Prima di tutto</div>
+    <h1>Chi sei e che livello hai?</h1>
+    <p class="date">Così le risposte si pesano nel modo giusto. Puoi cambiare quando vuoi.</p>
+    <label class="notes">Il tuo nome<input id="name" maxlength="40" autocomplete="given-name" required
+      value="${store.get("quiz.name", "").replace(/"/g, "&quot;")}"></label>
+    <div class="votes levels">${LEVELS.map(([id, name, slang, icon]) =>
+      `<button type="button" data-level="${id}"><span>${icon}</span><div><b>${slang}</b><small>${name}</small></div></button>`).join("")}</div>`;
+}
+
+function renderLevelChip() {
+  const l = LEVELS.find(x => x[0] === store.get(LEVEL_KEY, ""));
+  const name = store.get("quiz.name", "");
+  $("level-chip").innerHTML = l ? `<button type="button" class="lvchip" data-change-level>${l[3]} ${name ? name + " · " : ""}${l[1]} · cambia</button>` : "";
+}
+
+document.addEventListener("click", e => {
+  const lv = e.target.closest("[data-level]");
+  if (lv) {
+    const name = ($("name")?.value || "").trim();
+    if (!name) {  // il nome è obbligatorio: serve a distinguere chi risponde
+      toast("Scrivi il tuo nome per andare avanti");
+      $("name").focus();
+      $("name").classList.add("missing");
+      return;
+    }
+    store.set(LEVEL_KEY, lv.dataset.level);
+    store.set("quiz.name", name);
+    renderLevelChip(); next(); return;
+  }
+  if (e.target.closest("[data-change-level]")) { askLevel(); return; }
+  const c = e.target.closest("[data-choose]");
+  if (c) { choose(Number(c.dataset.choose)); return; }
+  const skip = e.target.closest("[data-skip]");
+  if (skip && !skip.disabled) { vote(skip.dataset.skip); return; }  // troppo attivo / piatto: vale per tutti e due
+  const b = e.target.closest("[data-vote]");
+  if (!b || b.disabled) return;
+  if (chosen == null) { toast("Prima scegli uno dei due spot"); return; }
+  vote(Number(b.dataset.vote));
+});
+
+(async () => {
+  updateCount();
+  try {
+    scenarios = (await fetch("data/quiz.json", { cache: "no-cache" }).then(r => r.json())).scenarios;
+    renderLevelChip();
+    // Senza nome o livello (anche chi aveva iniziato prima che il nome fosse obbligatorio) si parte da lì
+    LEVELS.some(l => l[0] === store.get(LEVEL_KEY, "")) && store.get("quiz.name", "") ? next() : askLevel();
+  } catch {
+    $("card").innerHTML = "<p>Non riesco a caricare le situazioni. Riprova tra poco.</p>";
+  }
+})();
+</script>
+</body>
+</html>

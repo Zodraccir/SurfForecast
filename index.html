@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ndo namo?</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Mono:wght@400;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Tavola delle maree stampata: carta salvia, inchiostro verde bottiglia, verde mare dall'icona.
+     Superfici piatte, filetti sottili, nessun bagliore. Tema scuro = stessa tavola di notte. */
+  :root {
+    --paper: #e8f0ea; --paper-2: #f3f7f3; --ink: #123e36; --ink-soft: #46655c; --ink-faint: #7f9a91;
+    --line: rgba(18, 62, 54, .14); --line-strong: rgba(18, 62, 54, .32);
+    --sea: #2f9c7f; --sea-ink: #1d6f59; --sea-tint: rgba(47, 156, 127, .13); --on-sea: #f3f7f3;
+    --swell: #2f9c7f; --swell-soft: #7fbfab; --wind: #d0573a; --wind-tint: rgba(208, 87, 58, .12);
+    --sun: #e2ad2f; --sun-tint: rgba(226, 173, 47, .18); --storm-ink: #3a2a00;
+    --water: #d3e6df; --sand: #e5d7b5; --coast: #8a7652; --night: rgba(18, 62, 54, .18);
+    --s0: #dbe5de; --s1: #c4dcd2; --s2: #9ccbb9; --s3: #5fb197; --s4: #2f9c7f; --s5: #12634f;
+    --w1: rgba(47, 156, 127, .12); --w2: rgba(47, 156, 127, .26); --w3: rgba(226, 173, 47, .32);
+    --w4: rgba(208, 87, 58, .30); --w5: rgba(208, 87, 58, .5);
+    --display: "Archivo", "Arial Narrow", sans-serif;
+    --body: "Work Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --timeline-h: 132px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0e231e; --paper-2: #14302a; --ink: #e3eee8; --ink-soft: #9fbab0; --ink-faint: #64837a;
+      --line: rgba(227, 238, 232, .11); --line-strong: rgba(227, 238, 232, .28);
+      --sea: #4cc29f; --sea-ink: #7fd8bc; --sea-tint: rgba(76, 194, 159, .15); --on-sea: #0e231e;
+      --swell: #4cc29f; --swell-soft: #3d8a74; --wind: #f08362; --wind-tint: rgba(240, 131, 98, .14);
+      --sun: #f0c45a; --sun-tint: rgba(240, 196, 90, .16); --storm-ink: #2b1f00;
+      --water: #163a33; --sand: #3b3627; --coast: #b9a67a; --night: rgba(227, 238, 232, .10);
+      --s0: #1b342e; --s1: #1f4a3f; --s2: #23664f; --s3: #2f8a6c; --s4: #4cc29f; --s5: #a5ecd5;
+      --w1: rgba(76, 194, 159, .14); --w2: rgba(76, 194, 159, .28); --w3: rgba(240, 196, 90, .28);
+      --w4: rgba(240, 131, 98, .30); --w5: rgba(240, 131, 98, .5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e231e; --paper-2: #14302a; --ink: #e3eee8; --ink-soft: #9fbab0; --ink-faint: #64837a;
+    --line: rgba(227, 238, 232, .11); --line-strong: rgba(227, 238, 232, .28);
+    --sea: #4cc29f; --sea-ink: #7fd8bc; --sea-tint: rgba(76, 194, 159, .15); --on-sea: #0e231e;
+    --swell: #4cc29f; --swell-soft: #3d8a74; --wind: #f08362; --wind-tint: rgba(240, 131, 98, .14);
+    --sun: #f0c45a; --sun-tint: rgba(240, 196, 90, .16); --storm-ink: #2b1f00;
+    --water: #163a33; --sand: #3b3627; --coast: #b9a67a; --night: rgba(227, 238, 232, .10);
+    --s0: #1b342e; --s1: #1f4a3f; --s2: #23664f; --s3: #2f8a6c; --s4: #4cc29f; --s5: #a5ecd5;
+    --w1: rgba(76, 194, 159, .14); --w2: rgba(76, 194, 159, .28); --w3: rgba(240, 196, 90, .28);
+    --w4: rgba(240, 131, 98, .30); --w5: rgba(240, 131, 98, .5);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body { margin: 0; color: var(--ink); background: var(--paper); font: 15px/1.5 var(--body); min-height: 100vh;
+    padding-bottom: calc(var(--timeline-h) + 24px + env(safe-area-inset-bottom, 0px)); }
+  main { max-width: 1120px; margin: 0 auto; padding-block: 18px 0;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  a { color: var(--sea-ink); }
+  :focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* Header: marchio e controlli */
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--line-strong); }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 42px; height: 42px; border-radius: 10px; }
+  .brand b { display: block; font: 900 26px/1 var(--display); font-stretch: 125%; letter-spacing: -.01em; text-transform: uppercase; }
+  .brand small { display: block; font: 500 11px/1.2 var(--mono); color: var(--ink-soft); letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
+  header nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .units { display: inline-flex; gap: 6px; }
+  .seg-pill { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; }
+  .seg-pill button { font: 600 11px var(--mono); letter-spacing: .04em; color: var(--ink-soft); background: none; border: 0;
+    padding: 6px 9px; cursor: pointer; }
+  .seg-pill button + button { border-left: 1px solid var(--line); }
+  .seg-pill button:hover { color: var(--ink); background: var(--sea-tint); }
+  .seg-pill button.on { background: var(--ink); color: var(--paper); }
+  header nav a { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; text-decoration: none;
+    color: var(--ink); border: 1px solid var(--line-strong); padding: 6px 12px; border-radius: 6px; }
+  header nav a:hover { background: var(--sea-tint); }
+  header nav .navbtn { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; cursor: pointer;
+    color: var(--ink); background: none; border: 1px solid var(--line-strong); padding: 6px 12px; border-radius: 6px; }
+  header nav .navbtn:hover { background: var(--sea-tint); }
+
+  /* Qualità degli spot (opinione personale, salvata nel browser) */
+  .q-intro { margin: 0 0 8px; font-size: 13px; color: var(--ink-soft); }
+  .qrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, 1.3fr) 54px 28px; gap: 10px;
+    align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
+  .qrow .qname { font: 600 13px var(--body); overflow: hidden; text-overflow: ellipsis; }
+  .qrow .qname small { display: block; font: 400 11px var(--mono); color: var(--ink-faint); }
+  .qrow input[type=range] { width: 100%; accent-color: var(--sea); }
+  .qrow output { font: 600 15px var(--mono); text-align: right; }
+  .qrow output.mine { color: var(--sea); }
+  .qrow .qreset { background: none; border: 0; cursor: pointer; color: var(--ink-faint); font-size: 16px; padding: 0; }
+  .qrow .qreset:disabled { visibility: hidden; }
+  .q-foot { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .qual button { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit;
+    text-decoration: underline dotted; text-underline-offset: 3px; }
+
+  /* Fila degli spot */
+  .spots { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; }
+  .spots::-webkit-scrollbar { display: none; }
+  .spots button { flex: none; font: 500 13px var(--body); color: var(--ink-soft); background: transparent;
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px; }
+  .spots button:hover { color: var(--ink); border-color: var(--line-strong); }
+  .spots button.on { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+  .spots button .dot { width: 9px; height: 9px; border-radius: 2px; }
+
+  .when { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .when h2 { font: 800 clamp(26px, 5vw, 40px)/1.05 var(--display); font-stretch: 112%; margin: 0; letter-spacing: -.015em; text-wrap: balance; }
+  .when .sub { color: var(--ink-soft); font-size: 14px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font: 600 11px var(--mono); text-transform: uppercase;
+    letter-spacing: .06em; padding: 4px 8px; border-radius: 4px; background: var(--sea-tint); color: var(--sea-ink); }
+  .pill.night { background: var(--night); color: var(--ink-soft); }
+
+  /* Scheda dello spot migliore */
+  .hero { display: grid; grid-template-columns: 1.2fr 1fr; background: var(--paper-2); border: 1px solid var(--line-strong);
+    border-radius: 14px; overflow: hidden; position: relative; }
+  .hero.is-night .hero-main { opacity: .8; }
+  .hero-main { padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .eyebrow { font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sea-ink); }
+  .hero-title { display: flex; align-items: center; gap: 18px; }
+  .hero-title h3 { font: 900 clamp(28px, 4.6vw, 46px)/.98 var(--display); font-stretch: 118%; margin: 4px 0 8px;
+    letter-spacing: -.02em; text-wrap: balance; }
+  .route { display: inline-grid; place-items: center; width: .9em; height: .9em; vertical-align: -.08em; margin-left: .1em;
+    border-radius: 50%; transition: transform .15s; }
+  .route svg { width: 100%; height: 100%; }
+  .route:hover { transform: translateY(-2px); }
+  .verdict { font: 500 15px var(--body); color: var(--ink-soft); }
+  .verdict b { color: var(--ink); font-weight: 600; }
+  /* Surfabile sì / al limite / no: dal voto delle condizioni, senza la qualità dello spot */
+  .surf { display: inline-flex; align-items: baseline; gap: 6px; flex-wrap: wrap; font: 700 12px var(--mono);
+    letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 6px; line-height: 1.3; }
+  .surf small { font: 500 12px var(--body); letter-spacing: 0; text-transform: none; }
+  .surf.lg { font-size: 15px; padding: 6px 12px; margin: 6px 0 4px; }
+  .surf.yes { background: var(--sea); color: var(--on-sea); }
+  .surf.maybe { background: var(--sun); color: var(--storm-ink); }
+  .surf.no { background: var(--wind-tint); color: var(--wind); box-shadow: inset 0 0 0 1px var(--wind); }
+  .nosurf { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-weight: 600; color: var(--wind);
+    background: var(--wind-tint); }
+  .alt .surf { margin-top: 8px; }
+  .chip.trend { background: var(--sea-tint); color: var(--sea-ink); margin-top: 4px; }
+  .qual { margin-top: 4px; font: 500 12px var(--mono); color: var(--ink-soft); }
+  .qual b { color: var(--ink); font-weight: 600; }
+  .ring { flex: none; position: relative; width: 104px; height: 104px; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .val { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+  .ring .val span { font: 600 34px/1 var(--mono); letter-spacing: -.04em; }
+  .ring .val small { display: block; font: 500 10px var(--mono); color: var(--ink-soft); letter-spacing: .1em; margin-top: 2px; }
+  /* I quattro valori come una riga di tavola delle maree */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong); }
+  .stat { padding: 10px 12px; min-width: 0; }
+  .stat + .stat { border-left: 1px solid var(--line); }
+  .stat label { display: block; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .stat .v { font: 600 22px/1.2 var(--mono); margin-top: 4px; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+    font-variant-numeric: tabular-nums; }
+  .stat .v small { font-size: 12px; color: var(--ink-soft); font-weight: 400; }
+  .stat .x { font-size: 12.5px; line-height: 1.35; color: var(--ink-soft); margin-top: 4px; }
+  .chip { display: inline-block; font: 600 10.5px var(--mono); text-transform: uppercase; letter-spacing: .05em;
+    padding: 2px 6px; border-radius: 4px; }
+  .chip.offshore { background: var(--sea-tint); color: var(--sea-ink); }
+  .chip.cross { background: var(--sun-tint); color: var(--ink); }
+  .chip.onshore { background: var(--wind-tint); color: var(--wind); }
+  .temps { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--ink-soft); }
+  .temps b { color: var(--ink); font: 600 14px var(--mono); }
+  .chip.suit { background: var(--sea-tint); color: var(--sea-ink); text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .agree { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-soft); }
+  .agree b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+  .chip.agree-high { background: var(--sea-tint); color: var(--sea-ink); }
+  .chip.agree-mid { background: var(--sun-tint); color: var(--ink); }
+  .chip.agree-low { background: var(--wind-tint); color: var(--wind); }
+  .notes { font-size: 14px; line-height: 1.55; color: var(--ink-soft); margin: 0; max-width: 62ch; }
+  .storm { font: 600 13px var(--body); color: var(--storm-ink); background: var(--sun); border-radius: 6px; padding: 8px 12px; }
+  .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .link-btn { font: 600 12px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 6px 11px; text-decoration: none; cursor: pointer; }
+  .link-btn:hover { background: var(--sea-tint); }
+  .hero-map { position: relative; background: var(--paper); display: flex; flex-direction: column; align-items: center;
+    padding: 14px 18px 18px; border-left: 1px solid var(--line-strong); }
+  .hero-map svg { width: 100%; max-width: 380px; height: auto; }
+  .back { position: absolute; top: 12px; right: 12px; font: 600 12px var(--body); background: var(--paper-2); color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 6px; padding: 6px 10px; cursor: pointer; z-index: 2; }
+  .night-note { font-size: 13px; color: var(--ink-soft); }
+  .rose .arrow { transition: transform .35s cubic-bezier(.3, .7, .3, 1); }
+  .rose .lbl { font: 600 7.5px var(--body); paint-order: stroke; stroke: var(--paper); stroke-width: 2.6px; }
+  .rose .lbl.big { font: 600 9.5px var(--mono); letter-spacing: .04em; stroke-width: 3px; }
+  .model-list { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; width: 100%; max-width: 380px; margin-top: 6px; }
+  .model-list h6 { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 4px; }
+  .mrow { display: grid; grid-template-columns: 14px 1fr auto 30px; gap: 6px; align-items: center; font-size: 11.5px; line-height: 1.7; }
+  .mrow span { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mrow b { font: 600 11px var(--mono); }
+  .mrow i { font: 400 10px var(--mono); color: var(--ink-faint); font-style: normal; text-align: right; }
+
+  /* Storico */
+  .history { position: fixed; inset: 0; z-index: 30; background: var(--line-strong); display: flex; justify-content: center;
+    align-items: flex-end; padding: 16px; }
+  .history[hidden] { display: none; }
+  .sheet { width: 100%; max-width: 720px; max-height: 80vh; overflow-y: auto; background: var(--paper-2);
+    border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px; }
+  .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px;
+    position: sticky; top: -18px; background: var(--paper-2); padding: 4px 0; }
+  .sheet-head h4 { font: 800 18px var(--display); font-stretch: 112%; margin: 0; }
+  .hrow { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .hdate { font: 600 13px var(--mono); }
+  .hdate span { display: block; color: var(--ink-soft); font-weight: 400; font-size: 11px; }
+  .hbody p { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); }
+  .hbody .stars { color: var(--sea); letter-spacing: 1px; margin-right: 6px; }
+
+  /* Modulo segnalazione */
+  .link-btn.add { border-style: dashed; }
+  #report-form { display: flex; flex-direction: column; gap: 12px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  #report-form label, #report-form .field > span { display: block; font: 600 10px var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); }
+  #report-form input, #report-form textarea { display: block; width: 100%; margin-top: 4px; padding: 8px 10px;
+    font: 500 14px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong);
+    border-radius: 6px; text-transform: none; letter-spacing: 0; }
+  #report-form textarea { resize: vertical; }
+  .sea-hint { margin: 4px 0 6px; font-size: 12px; color: var(--ink-soft); }
+  #report-form .sea-range input { padding: 0; border: 0; background: none; accent-color: var(--sea); margin-top: 2px; }
+  .sea-range input.unset { opacity: .45; }
+  .sea-range output { display: block; min-height: 2.6em; margin-top: 2px; font-size: 13px; color: var(--ink-soft); }
+  .sea-range output b { font: 600 15px var(--mono); color: var(--ink); }
+  #report-form .seg { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  #report-form .seg button { flex: 1 0 auto; padding: 7px 10px; font: 500 13px var(--body); color: var(--ink);
+    background: var(--paper); border: 1px solid var(--line-strong); border-radius: 6px; cursor: pointer; }
+  #report-form .seg button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .form-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .primary-btn { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; padding: 10px 16px;
+    background: var(--ink); color: var(--paper); border: 0; border-radius: 6px; cursor: pointer; }
+  .primary-btn:hover { background: var(--sea-ink); }
+  #r-status { font-size: 13px; color: var(--wind); }
+
+  /* Alternative */
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .section-head h4 { font: 800 15px var(--display); font-stretch: 118%; text-transform: uppercase; letter-spacing: .02em; margin: 0; }
+  .section-head span { color: var(--ink-faint); font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+  .alts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: 10px; overflow-x: auto;
+    scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  .alt { scroll-snap-align: start; background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 10px; }
+  .alt:hover { border-color: var(--ink); }
+  .alt .row { display: flex; align-items: center; gap: 12px; }
+  .alt .rank { font: 600 11px var(--mono); color: var(--ink-faint); }
+  .alt h5 { font: 800 15px/1.15 var(--display); font-stretch: 108%; margin: 0; }
+  .alt .mini { flex: none; width: 44px; height: 44px; border-radius: 6px; display: grid; place-items: center;
+    font: 600 17px var(--mono); }
+  .alt .meta { font-size: 12px; color: var(--ink-soft); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .alt .meta b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+
+  /* Dettaglio */
+  .detail { background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .day-chart svg { width: 100%; height: 150px; display: block; cursor: pointer; }
+  .cmp-wrap { overflow-x: auto; margin-top: 14px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  table.cmp { border-collapse: separate; border-spacing: 2px; font: 12px var(--mono); font-variant-numeric: tabular-nums; }
+  table.cmp th, table.cmp td { padding: 3px 4px; text-align: center; white-space: nowrap; }
+  table.cmp th { color: var(--ink-faint); font-weight: 400; }
+  table.cmp .lab { position: sticky; left: 0; background: var(--paper-2); text-align: left; font: 500 12px var(--body);
+    color: var(--ink); padding-right: 10px; z-index: 1; }
+  table.cmp tr.group td { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sea-ink);
+    text-align: left; padding-top: 10px; position: sticky; left: 0; background: transparent; }
+  table.cmp td.v { border-radius: 3px; min-width: 40px; line-height: 1.15; cursor: pointer; }
+  table.cmp td.v small { display: block; opacity: .7; font-size: 10px; }
+  table.cmp .sel { outline: 2px solid var(--ink); outline-offset: -1px; }
+  table.cmp th.day { text-align: left; color: var(--ink); font: 600 12px var(--body); border-left: 1px solid var(--line-strong); }
+  .arr { width: 11px; height: 11px; vertical-align: -1px; margin-right: 2px; }
+  .foot { color: var(--ink-faint); font-size: 12px; margin: 22px 0; max-width: 80ch; }
+
+  /* Timeline */
+  .timeline { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; height: calc(var(--timeline-h) + env(safe-area-inset-bottom, 0px));
+    background: var(--paper-2); border-top: 1px solid var(--line-strong); padding: 8px 0 env(safe-area-inset-bottom, 0px); }
+  .tl-bar { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 8px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .tl-bar button { flex: none; width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--line-strong);
+    background: transparent; color: var(--ink); font: 600 15px var(--mono); cursor: pointer; }
+  .tl-bar button.now { width: auto; padding: 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .tl-bar button:hover { background: var(--sea-tint); }
+  .tl-bar button.now:hover { background: var(--sea-ink); }
+  .tl-scroll { flex: 1; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; position: relative; cursor: pointer; touch-action: pan-x; }
+  .tl-scroll::-webkit-scrollbar { display: none; }
+  .tl-scroll svg { display: block; }
+  .tl-legend { max-width: 1120px; margin: 4px auto 0; display: flex; justify-content: space-between; gap: 12px;
+    font: 500 10.5px var(--mono); color: var(--ink-faint);
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-map { border-left: none; border-top: 1px solid var(--line-strong); }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat:nth-child(3) { border-left: none; }
+    .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .ring { width: 86px; height: 86px; }
+    .ring .val span { font-size: 28px; }
+    .tl-bar button:not(.now) { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">
+      <img src="icon.svg" alt="" width="42" height="42">
+      <div><b>Ndo namo?</b><small data-i18n="brand_sub"></small></div>
+    </div>
+    <nav><span id="level"></span><span id="units" class="units"></span><span id="lang"></span><button class="navbtn" data-quality data-i18n="q_btn"></button><a href="quiz.html" id="nav-quiz" data-i18n="nav_quiz" hidden></a><a href="/diario" id="nav-diary" data-i18n="nav_diary"></a></nav>
+  </header>
+
+  <div class="spots" id="spots"></div>
+  <div class="when" id="when"></div>
+  <section class="hero" id="hero">
+    <div class="hero-main" id="hero-main"><p class="verdict" data-i18n="loading"></p></div>
+    <div class="hero-map" id="hero-map"></div>
+  </section>
+
+  <div class="section-head"><h4 data-i18n="alternatives"></h4><span data-i18n="scroll"></span></div>
+  <div class="alts" id="alts"></div>
+
+  <div class="section-head"><h4 id="detail-title" data-i18n="detail"></h4><span id="detail-sub"></span></div>
+  <section class="detail">
+    <div class="day-chart" id="day-chart"></div>
+    <div class="cmp-wrap" id="cmp"></div>
+  </section>
+
+  <p class="foot" data-i18n="foot"></p>
+</main>
+
+<div class="timeline">
+  <div class="tl-bar">
+    <button id="prev-day" data-i18n-title="prev_day">«</button>
+    <button id="prev" data-i18n-title="prev_hour">‹</button>
+    <div class="tl-scroll" id="tl-scroll"></div>
+    <button id="next" data-i18n-title="next_hour">›</button>
+    <button id="next-day" data-i18n-title="next_day">»</button>
+    <button class="now" id="now" data-i18n="now"></button>
+  </div>
+  <div class="tl-legend"><span id="tl-what"></span><span id="tl-range"></span></div>
+</div>
+
+<div class="history" id="history" hidden></div>
+<div class="history" id="report" hidden></div>
+<div class="history" id="quality" hidden></div>
+
+<script>window.NDO_STATIC = true; window.NDO_FORM = {"url": "https://docs.google.com/forms/d/e/1FAIpQLSf5GR-3FghY_uwCT1QLJiOFCCwhoyk2Lds5Su34NNGLJrkfzQ/formResponse", "fields": {"spot": "entry.1551300113", "start": "entry.940655956", "duration_min": "entry.136625469", "kind": "entry.1310415706", "height_m": "entry.862008086", "quality": "entry.1945771398", "wind_obs": "entry.1395528666", "wind_strength": "entry.1810173606", "notes": "entry.562704763", "name": "entry.846206788"}};</script>
+<script src="i18n.js?v=711fb856"></script>
+<script>
+applyI18n();
+// Versione pubblicata (surf/export.py): dati da file statici, storico anonimo, niente diario.
+const STATIC = window.NDO_STATIC === true;
+const API = STATIC
+  ? { timeline: "data/timeline.json", models: id => `data/models/${id}.json`, coast: id => `data/coast/${id}.json`,
+      sessions: "data/history.json" }
+  : { timeline: "/api/timeline", models: id => `/api/models?spot=${id}`, coast: id => `/api/coast?spot=${id}`, sessions: "/api/sessions" };
+document.getElementById("nav-diary").hidden = STATIC;
+document.getElementById("nav-quiz").hidden = !STATIC;  // il quiz sta solo sul sito pubblicato
+const $ = id => document.getElementById(id);
+const COMPASS = I18N[LANG]._compass;
+const WIND_NAMES = ["Tramontana","Grecale","Levante","Scirocco","Ostro","Libeccio","Ponente","Maestrale"];
+const compass = d => d == null ? "–" : COMPASS[Math.round(d / 22.5) % 16];
+const windName = d => d == null ? "" : WIND_NAMES[Math.round(d / 45) % 8];
+const f = (v, n = 1) => v == null ? "–" : Number(v).toFixed(n);
+const MODEL_NAMES = {
+  ecmwf_wam: "ECMWF WAM 9km", cmems_medwav: "Copernicus 4km", ewam: "DWD EWAM 5km", meteofrance_wave: "MeteoFrance 8km",
+  ncep_gfswave016: "GFS-Wave 16km", ecmwf_wam025: "ECMWF 25km", ncep_gfswave025: "GFS-Wave 25km", gwam: "DWD GWAM 25km",
+  italia_meteo_arpae_icon_2i: "ICON-2I 2km", meteofrance_arome_france: "AROME 1.3km", knmi_harmonie_arome_europe: "HARMONIE KNMI",
+  dmi_harmonie_arome_europe: "HARMONIE DMI", icon_eu: "ICON-EU 7km", ecmwf_ifs: "ECMWF 9km", ecmwf_ifs025: "ECMWF 25km",
+  ecmwf_aifs025_single: "ECMWF AIFS", meteofrance_arpege_europe: "ARPEGE", ukmo_global_deterministic_10km: "UKMO 10km",
+  gfs_seamless: "GFS",
+};
+
+// Scala del voto: dal blu profondo al verde acqua chiaro.
+// Scala del voto in 6 gradini, dai token del tema (chiaro e scuro hanno la loro).
+const scoreColor = r => r == null ? "var(--s0)" : `var(--s${Math.max(0, Math.min(5, Math.round(r)))})`;
+const textOn = r => r != null && Math.round(r) >= 4 ? "var(--on-sea)" : "var(--ink)";
+const VERDICTS = [[1, "v_flat"], [2, "v_poor"], [3, "v_fair"], [4, "v_good"], [5.1, "v_epic"]];
+// Sotto il 2 il giudizio dice il motivo (piatto, troppo grosso, mare attivo...), non solo "scarso".
+// Surfabilità: solo dalle condizioni del mare (rc), non dalla qualità dello spot né dalla classifica.
+// Soglie dal diario: sopra 1.5 i giorni non surfabili sono rari, da 2.5 è surfabile.
+const SURF_LEVELS = [[1.5, "no"], [2.5, "maybe"], [Infinity, "yes"]];
+const surfLevel = h => SURF_LEVELS.find(([limit]) => (h.rc ?? h.r) < limit)[1];
+function surfBadge(h, big = false) {
+  const level = surfLevel(h);
+  // il motivo lo dice già il verdetto sotto
+  const tooBig = h.big && level !== "no" ? ` <small>· ${t("too_big_level")}</small>` : "";
+  return `<span class="surf ${level}${big ? " lg" : ""}">${{ yes: "✓", maybe: "≈", no: "✕" }[level]} ${t("surf_" + level)}${big ? tooBig : ""}</span>`;
+}
+// Mare in scaduta (calo dopo una mareggiata più grossa nelle 36 ore prima)
+const trendChip = h => h.tr === "down" ? `<span class="chip trend" title="${t("tr_down_title")}">↘ ${t("tr_down")}</span>` : "";
+// Il mare ancora formato dopo una mareggiata si dice sempre: il voto da solo non lo spiega.
+const verdict = (r, why) => (r < 2 || why === "settling") && why ? t("why_" + why) : t(VERDICTS.find(([limit]) => r < limit)[1]);
+// Muta consigliata dalla temperatura dell'acqua; con aria fredda (< 12°) un grado in più.
+function wetsuit(water, air) {
+  const w = water - (air != null && air < 12 ? 1.5 : 0);
+  return t(w >= 24 ? "suit_none" : w >= 21 ? "suit_shorty" : w >= 18 ? "suit_32" : w >= 15 ? "suit_43"
+    : w >= 13 ? "suit_54" : "suit_54h");
+}
+
+// Quanto i modelli concordano: scarto tra il più alto e il più basso, per l'onda (relativo) e per il vento (nodi).
+function agreement(h) {
+  const wave = h.hr ? (h.hr[1] - h.hr[0]) / Math.max(h.h, 0.3) : 0;
+  const wind = h.wr ? h.wr[1] - h.wr[0] : 0;
+  return wave > 0.6 || wind > 16 ? "low" : wave > 0.25 || wind > 8 ? "mid" : "high";
+}
+const windColor = kn => kn == null ? "transparent"
+  : `var(--w${kn < 8 ? 1 : kn < 14 ? 2 : kn < 20 ? 3 : kn < 26 ? 4 : 5})`;
+
+let data, state = { i: 0, pinned: null }, renderedMap = null, sessions = [];
+let shared = [];  // segnalazioni lasciate sulla pagina condivisa (archivio della pagina)
+// ---- Qualità degli spot: ognuno può dare la sua, salvata solo in questo browser ----
+// Il server manda il voto delle condizioni (rc); il voto finale è rc x (qualità/5)^quality_power,
+// ricalcolato qui, così la classifica dello spot migliore segue l'opinione di chi guarda.
+const Q_KEY = "ndo.quality";
+let myQuality = {};
+try { myQuality = JSON.parse(localStorage.getItem(Q_KEY) || "{}") || {}; } catch { myQuality = {}; }
+// Livello di chi guarda (condiviso con il quiz): cambia gli spot preferiti e la taglia d'onda che va bene.
+const LEVEL_KEY = "ndo.level", LEVELS = ["principiante", "intermedio", "esperto"];
+let userLevel = (() => { try { return JSON.parse(localStorage.getItem(LEVEL_KEY)) || "esperto"; } catch { return "esperto"; } })();
+if (!LEVELS.includes(userLevel)) userLevel = "esperto";
+const levelCfg = () => data.levels?.[userLevel] || {};
+const baseQuality = s => levelCfg().quality?.[s.id] ?? s.quality ?? data.default_quality ?? 3;
+const spotQuality = s => myQuality[s.id] ?? baseQuality(s);
+function saveQuality() { try { localStorage.setItem(Q_KEY, JSON.stringify(myQuality)); } catch {} }
+// Swell efficace (90% swell + 10% onda) e quanto va bene per il livello: piena fino a ideal_max, poi scende
+const effSwell = h => h.sh == null ? h.h : 0.9 * h.sh + 0.1 * h.h;
+function sizeForLevel(h) {
+  const sz = levelCfg().size, e = effSwell(h);
+  if (!sz || e == null || e <= sz.ideal_max) return 1;
+  return Math.max(sz.floor, 1 - (1 - sz.floor) * (e - sz.ideal_max) / (sz.zero_at - sz.ideal_max));
+}
+function applyQuality() {
+  const p = levelCfg().quality_power ?? data.quality_power ?? 0.5;
+  for (const s of data.spots) {
+    const k = (spotQuality(s) / 5) ** p;
+    for (const h of s.hours) if (h && h.rc != null) {
+      const sf = sizeForLevel(h);
+      h.r = Math.round(h.rc * k * sf * 10) / 10;
+      h.big = sf < 0.8;  // troppo grosso per il livello
+    }
+  }
+}
+function setLevel(l) {
+  userLevel = l;
+  try { localStorage.setItem(LEVEL_KEY, JSON.stringify(l)); } catch {}
+  renderLevel();
+  refreshQuality();
+}
+function renderLevel() {
+  $("level").innerHTML = `<span class="seg-pill" role="group" aria-label="${t("level")}">${LEVELS.map(l =>
+    `<button type="button" class="${l === userLevel ? "on" : ""}" data-level="${l}" title="${data?.levels?.[l]?.slang || ""}">${t("lv_" + l)}</button>`).join("")}</span>`;
+}
+function refreshQuality() {
+  applyQuality();
+  buildTimeline();
+  updateTimelineMarker(false);
+  render();
+}
+
+function openQuality() {
+  const rows = [...data.spots].sort((a, b) => spotQuality(b) - spotQuality(a)).map(s => {
+    const mine = myQuality[s.id] != null;
+    return `<div class="qrow" data-q="${s.id}">
+      <div class="qname">${s.name}<small>${t("q_default")} ${f(baseQuality(s))}</small></div>
+      <input type="range" min="0" max="5" step="0.1" value="${spotQuality(s)}" aria-label="${s.name}">
+      <output class="${mine ? "mine" : ""}">${f(spotQuality(s))}</output>
+      <button type="button" class="qreset" title="${t("q_reset")}" aria-label="${t("q_reset")}" ${mine ? "" : "disabled"}>↺</button>
+    </div>`;
+  }).join("");
+  $("quality").innerHTML = `<div class="sheet" role="dialog" aria-label="${t("q_title")}">
+    <div class="sheet-head"><h4>${t("q_title")}</h4><button type="button" class="link-btn" data-close>${t("close")}</button></div>
+    <p class="q-intro">${t("q_intro")}</p>${rows}
+    <div class="q-foot"><button type="button" class="link-btn" id="q-reset-all">${t("q_reset_all")}</button></div></div>`;
+  const sheet = $("quality");
+  sheet.querySelectorAll(".qrow").forEach(row => {
+    const id = row.dataset.q, range = row.querySelector("input"), out = row.querySelector("output"),
+          reset = row.querySelector(".qreset"), spot = data.spots.find(s => s.id === id);
+    const mark = () => { const mine = myQuality[id] != null; out.classList.toggle("mine", mine); reset.disabled = !mine; };
+    range.addEventListener("input", () => { out.textContent = f(range.value); });
+    range.addEventListener("change", () => {
+      const v = Number(range.value);
+      if (Math.abs(v - baseQuality(spot)) < 0.05) delete myQuality[id]; else myQuality[id] = v;
+      saveQuality(); mark(); refreshQuality();
+    });
+    reset.addEventListener("click", () => {
+      delete myQuality[id]; saveQuality();
+      range.value = baseQuality(spot); out.textContent = f(baseQuality(spot)); mark(); refreshQuality();
+    });
+  });
+  $("q-reset-all").onclick = () => { myQuality = {}; saveQuality(); refreshQuality(); openQuality(); };
+  sheet.hidden = false;
+}
+
+const historyOf = id => [...sessions, ...shared].filter(s => s.spot === id)
+  .sort((a, b) => b.start_utc.localeCompare(a.start_utc));
+
+// ---- Segnalazioni: dal PC vanno nel diario, dalla pagina condivisa nell'archivio della pagina ----
+let reportDb = null, reportUser = null;
+const localToUtc = (date, time) => new Date(`${date}T${time}`).toISOString().slice(0, 16);
+
+async function connectShared() {
+  if (!STATIC || !window.claude?.use) return;
+  [reportDb, reportUser] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (!reportDb) return;
+  // Ogni persona ha una scheda "reports/<id>" con le sue segnalazioni; tutti le leggono.
+  reportDb.collection("reports").onSnapshot(snap => {
+    shared = snap.docs.flatMap(d => (d.data().items || []).map(it => ({ ...it, fromPage: true })));
+    render();
+  }, () => {});
+}
+
+// Sito statico (GitHub Pages): le segnalazioni vanno a un Google Form via API, il modulo resta quello dell'app.
+const FORM = STATIC && !window.claude?.use ? window.NDO_FORM : null;
+const NAME_KEY = "ndo.name";
+const savedName = () => { try { return localStorage.getItem(NAME_KEY) || ""; } catch { return ""; } };
+
+function openReport(id) {
+  // Sito statico senza archivio né modulo: le segnalazioni si lasciano sulla pagina Claude.
+  if (STATIC && !window.claude?.use && !FORM && window.NDO_REPORT_URL) { window.open(window.NDO_REPORT_URL, "_blank", "noopener"); return; }
+  const spot = data.spots.find(s => s.id === id);
+  const at = new Date(data.times[state.i]);
+  const seg = (name, opts) => `<div class="seg" data-name="${name}">${opts.map(([v, l]) =>
+    `<button type="button" data-value="${v}">${l}</button>`).join("")}</div>`;
+  $("report").innerHTML = `<form class="sheet" id="report-form" aria-label="${t("report_title", { name: spot.name })}">
+    <div class="sheet-head"><h4>${t("report_title", { name: spot.name })}</h4><button type="button" class="link-btn" data-close>${t("close")}</button></div>
+    <div class="form-grid">
+      <label>${t("date")}<input type="date" id="r-date" required value="${at.toLocaleDateString("sv-SE")}"></label>
+      <label>${t("time_start")}<input type="time" id="r-time" step="900" required value="${at.toTimeString().slice(0, 5)}"></label>
+      <label>${t("height", { u: H_UNIT })}<input type="number" id="r-height" min="0" max="20" step="0.1" placeholder="${fH(1)}"></label>
+      <label>${t("duration")}<input type="number" id="r-duration" min="0" max="600" step="15" placeholder="90"></label>
+      ${FORM ? `<label>${t("name_opt")}<input type="text" id="r-name" maxlength="40" value="${savedName().replace(/"/g, "&quot;")}"></label>` : ""}
+    </div>
+    <div class="field"><span>${t("kind")}</span>${seg("kind", [["surf", t("kind_surf")], ["check", t("kind_check")]])}</div>
+    <div class="field"><span>${t("quality")}</span><p class="sea-hint">${t("sea_hint")}</p>${seaRange("r-sea")}</div>
+    <div class="field"><span>${t("wind_on_spot")}</span>${seg("wind_obs", ["assente", "offshore", "cross", "onshore"].map(w => [w, t("w_" + w)]))}</div>
+    <div class="field"><span>${t("wind_strength")}</span>${seg("wind_strength", ["debole", "medio", "forte"].map(w => [w, t("s_" + w)]))}</div>
+    <label class="field">${t("notes")}<textarea id="r-notes" rows="3" placeholder="${t("notes_ph")}"></textarea></label>
+    <div class="form-foot"><button type="submit" class="primary-btn">${t("report_save")}</button><span id="r-status" role="status"></span></div>
+  </form>`;
+  const form = $("report-form");
+  form.querySelectorAll(".seg").forEach(s => s.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const on = b.classList.contains("on");
+    s.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+    if (!on) b.classList.add("on");
+  }));
+  form.querySelector('[data-name="kind"] [data-value="surf"]').classList.add("on");
+  bindSeaRange("r-sea");
+  form.addEventListener("submit", e => { e.preventDefault(); saveReport(spot); });
+  $("report").hidden = false;
+}
+
+async function saveReport(spot) {
+  const pick = name => $("report-form").querySelector(`[data-name="${name}"] .on`)?.dataset.value ?? null;
+  const date = $("r-date").value, time = $("r-time").value, h = $("r-height").value;
+  const report = {
+    spot: spot.id, kind: pick("kind") || "surf", start_local: `${date}T${time}`, start_utc: localToUtc(date, time),
+    quality: seaValue("r-sea"),
+    height_m: h === "" ? null : Math.round(fromH(Number(h)) * 100) / 100,
+    wind_obs: pick("wind_obs"), wind_strength: pick("wind_strength"),
+    duration_min: $("r-duration").value === "" ? null : Number($("r-duration").value),
+    notes: $("r-notes").value.trim().slice(0, 500) || null,
+  };
+  const status = $("r-status");
+  status.textContent = "";
+  try {
+    if (FORM) {
+      // Google Form: la risposta non è leggibile (no-cors), quindi si considera inviata se la rete risponde.
+      const name = $("r-name").value.trim();
+      try { localStorage.setItem(NAME_KEY, name); } catch {}
+      const values = { ...report, name, start: report.start_utc };
+      const body = new URLSearchParams();
+      for (const [key, entry] of Object.entries(FORM.fields))
+        if (values[key] != null && values[key] !== "") body.append(entry, String(values[key]));
+      await fetch(FORM.url, { method: "POST", mode: "no-cors", body });
+      shared = [...shared, { ...report, fromPage: true }];
+      status.textContent = t("report_sent");
+      await new Promise(r => setTimeout(r, 1200));
+    } else if (!STATIC) {
+      const r = await fetch("/api/sessions", { method: "POST", body: JSON.stringify(report) });
+      if (!r.ok) throw new Error();
+      sessions = await getJSON(API.sessions);
+    } else {
+      if (!reportDb || !reportUser) { status.textContent = t("report_login"); return; }
+      const ref = reportDb.doc("reports/" + await reportUser.id());
+      const snap = await ref.get();
+      const items = snap.exists ? (snap.data().items || []) : [];
+      await ref.set({ items: [...items, { ...report, created: new Date().toISOString() }] });
+    }
+    $("report").hidden = true;
+    render();
+  } catch (err) {
+    status.textContent = t("report_error");
+  }
+}
+
+// Itinerario Google Maps: al parcheggio più vicino se registrato, altrimenti allo spot.
+function routeLink(spot) {
+  const dest = spot.parking || spot;
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lon}&travelmode=driving`;
+  const label = t(spot.parking ? "route_parking" : "route_spot");
+  return `<a class="route" href="${url}" target="_blank" rel="noopener" title="${label}" aria-label="${label}">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.9 0-7 3-7 6.9 0 5.2 7 12.1 7 12.1s7-6.9 7-12.1c0-3.9-3.1-6.9-7-6.9z"
+      fill="var(--sea)"/><circle cx="12" cy="9.4" r="2.6" fill="var(--paper-2)"/></svg></a>`;
+}
+
+// Storico dello spot: tutte le segnalazioni del diario, dalla più recente.
+function openHistory(id) {
+  const spot = data.spots.find(s => s.id === id), list = historyOf(id);
+  const stars = q => q == null ? "" : q === 0 ? t("chip_flat") : seaStars(q);
+  const esc = s => s.replace(/[<>&]/g, ch => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[ch]);
+  $("history").innerHTML = `<div class="sheet" role="dialog" aria-label="${t("history_title", { name: spot.name })}">
+    <div class="sheet-head"><h4>${t("history_title", { name: spot.name })}</h4><button class="link-btn" data-close>${t("close")}</button></div>
+    ${list.map(s => {
+      const when = new Date(s.start_utc + "Z");
+      return `<div class="hrow">
+        <div class="hdate">${when.toLocaleDateString(LOCALE, { day: "numeric", month: "short", year: "numeric" })}
+          <span>${when.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}</span></div>
+        <div class="hbody"><div><span class="stars">${stars(s.quality)}</span>
+          ${s.height_m != null ? `<span class="chip cross">${fH(s.height_m)} ${H_UNIT}</span>` : ""}
+          ${s.kind === "check" ? `<span class="chip">${t("chip_check")}</span>` : ""}
+          ${s.fromPage ? `<span class="chip offshore">${t("report_from_page")}</span>` : ""}
+          ${s.wind_obs ? `<span class="chip">${t("w_" + s.wind_obs)}</span>` : ""}</div>
+          ${s.notes ? `<p>${esc(s.notes)}</p>` : ""}</div></div>`;
+    }).join("")}</div>`;
+  $("history").hidden = false;
+}
+const modelCache = {}, coastCache = {};
+
+// Fila degli spot: "Migliore" segue l'ora per ora, uno spot la fissa e la timeline mostra il suo voto.
+function renderSpotChips(list) {
+  const i = state.i;
+  $("spots").innerHTML = `<button class="${state.pinned ? "" : "on"}" data-pin="">${t("best_hourly")}</button>` +
+    data.spots.map(s => {
+      const r = s.hours[i]?.r;
+      return `<button class="${state.pinned === s.id ? "on" : ""}" data-pin="${s.id}">
+        <span class="dot" style="background:${scoreColor(r)}"></span>${s.name}</button>`;
+    }).join("");
+}
+
+function pin(id) {
+  state.pinned = id || null;
+  buildTimeline();
+  updateTimelineMarker(false);
+  render();
+}
+
+const fmtTime = iso => {
+  const d = new Date(iso);
+  return { day: d.toLocaleDateString(LOCALE, { weekday: "long", day: "numeric", month: "long" }),
+           short: d.toLocaleDateString(LOCALE, { weekday: "short", day: "numeric" }),
+           hour: d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" }) };
+};
+const ranked = i => data.spots.filter(s => s.hours[i]).sort((a, b) => b.hours[i].r - a.hours[i].r);
+const nextDaylight = i => { let k = i; while (k < data.times.length && data.night[k]) k++; return k < data.times.length ? k : i; };
+
+// ---------- Timeline ----------
+const COL = 9, TL_H = 82;
+// Barre: voto dello spot scelto, oppure il migliore tra tutti gli spot.
+function buildTimeline() {
+  const n = data.times.length, w = n * COL;
+  const pinned = state.pinned && data.spots.find(s => s.id === state.pinned);
+  const best = data.times.map((_, i) => pinned ? (pinned.hours[i] ? pinned.hours[i].r : -1)
+    : Math.max(...data.spots.map(s => s.hours[i] ? s.hours[i].r : -1)));
+  $("tl-what").textContent = pinned ? t("tl_spot", { name: pinned.name }) : t("tl_best");
+  let night = "", bars = "", days = "", storms = "";
+  const stormAt = i => pinned ? pinned.hours[i]?.st : data.spots.some(s => s.hours[i]?.st);
+  for (let i = 0; i < n; i++) {
+    const x = i * COL;
+    if (stormAt(i)) storms += `<rect x="${x + 1}" y="18" width="${COL - 2}" height="4" rx="1" fill="var(--sun)"/>`;
+    if (data.night[i]) night += `<rect x="${x}" y="0" width="${COL}" height="${TL_H}" fill="url(#hatch)"/>`;
+    const r = best[i] < 0 ? null : best[i];
+    if (r != null) {
+      const h = 4 + (r / 5) * (TL_H - 30);
+      bars += `<rect x="${x + 1}" y="${TL_H - 6 - h}" width="${COL - 2}" height="${h}" rx="2" fill="${scoreColor(r)}" opacity="${data.night[i] ? .35 : 1}"/>`;
+    }
+    const d = new Date(data.times[i]);
+    if (d.getHours() === 0 || i === 0) {
+      days += `<line x1="${x}" y1="0" x2="${x}" y2="${TL_H}" stroke="var(--line-strong)"/>
+        <text x="${x + 5}" y="13" font-family="IBM Plex Mono" font-weight="600" font-size="10" fill="var(--ink)">${fmtTime(data.times[i]).short.toUpperCase()}</text>`;
+    } else if (d.getHours() % 6 === 0) {
+      days += `<text x="${x + 2}" y="${TL_H - 0}" font-family="IBM Plex Mono" font-size="8" fill="var(--ink-faint)">${String(d.getHours()).padStart(2, "0")}</text>`;
+    }
+  }
+  // Le notti tratteggiate, come sulle carte nautiche
+  $("tl-scroll").innerHTML = `<svg width="${w}" height="${TL_H + 2}" viewBox="0 0 ${w} ${TL_H + 2}">
+    <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--night)" stroke-width="2.2"/></pattern></defs>
+    ${night}${bars}${storms}${days}<g id="tl-sel"></g></svg>`;
+  const last = fmtTime(data.times.at(-1));
+  $("tl-range").textContent = t("tl_until", { d: `${last.short} ${last.hour}` });
+}
+
+function updateTimelineMarker(scroll = true) {
+  const x = state.i * COL + COL / 2;
+  document.getElementById("tl-sel").innerHTML =
+    `<rect x="${state.i * COL}" y="0" width="${COL}" height="${TL_H}" fill="var(--sea-tint)"/>
+     <line x1="${x}" y1="16" x2="${x}" y2="${TL_H}" stroke="var(--swell)" stroke-width="2"/>
+     <circle cx="${x}" cy="18" r="4" fill="var(--swell)"/>`;
+  if (scroll) {
+    const box = $("tl-scroll"), left = state.i * COL - box.clientWidth / 2;
+    box.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+  }
+}
+
+function select(i, scroll = true) {
+  state.i = Math.max(0, Math.min(data.times.length - 1, i));
+  render();
+  updateTimelineMarker(scroll);
+}
+
+function timelineEvents() {
+  const box = $("tl-scroll");
+  let dragging = false;
+  const idx = e => Math.floor((e.clientX - box.getBoundingClientRect().left + box.scrollLeft) / COL);
+  box.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") { dragging = true; box.setPointerCapture(e.pointerId); select(idx(e), false); } });
+  box.addEventListener("pointermove", e => { if (dragging) select(idx(e), false); });
+  box.addEventListener("pointerup", () => { dragging = false; });
+  box.addEventListener("click", e => { if (e.pointerType !== "mouse") select(idx(e), false); });
+  $("prev").onclick = () => select(state.i - 1);
+  $("next").onclick = () => select(state.i + 1);
+  $("prev-day").onclick = () => select(state.i - 24);
+  $("next-day").onclick = () => select(state.i + 24);
+  $("now").onclick = () => select(nextDaylight(0));
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("input, textarea, select")) return;  // mentre si scrive nel modulo
+    if (e.key === "Escape") { $("history").hidden = true; $("report").hidden = true; }
+    if (e.key === "ArrowLeft") select(state.i - (e.shiftKey ? 24 : 1));
+    if (e.key === "ArrowRight") select(state.i + (e.shiftKey ? 24 : 1));
+  });
+}
+
+// ---------- Rosa con costa reale ----------
+function arrowSvg(dir, color = "currentColor") {
+  return dir == null ? "" : `<svg class="arr" viewBox="-6 -6 12 12"><g transform="rotate(${(dir + 180) % 360})"><path d="M0,-5 L3.5,2.5 L0,1 L-3.5,2.5 Z" fill="${color}"/></g></svg>`;
+}
+
+function coastMap(spot, coast, c, R) {
+  const scale = R / coast.radius_m, k = Math.cos(spot.lat * Math.PI / 180);
+  const xy = ([la, lo]) => [c + (lo - spot.lon) * 111320 * k * scale, c - (la - spot.lat) * 110540 * scale];
+  const fmt = pts => pts.map(p => p.map(v => v.toFixed(1)).join(",")).join(" ");
+  const far = 6 * R, near = 1.25 * R;
+  const dist = q => Math.hypot(q[0] - c, q[1] - c);
+  const unit = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], n = Math.hypot(dx, dy) || 1; return [dx / n, dy / n]; };
+  // In OSM la terra sta a sinistra del verso della costa. Di ogni linea tengo solo il tratto vicino
+  // allo spot, lo prolungo dritto ben oltre il bordo e chiudo verso sinistra: la terra resta della
+  // sua forma vera dentro il cerchio, qualunque cosa faccia la costa lontano.
+  let land = "", lines = "";
+  for (const chain of coast.coast) {
+    let p = chain.map(xy);
+    if (p.length < 2) continue;
+    const closed = chain[0][0] === chain.at(-1)[0] && chain[0][1] === chain.at(-1)[1];
+    if (closed) {
+      if (p.some(q => dist(q) < near)) {
+        land += `<polygon points="${fmt(p)}" fill="var(--sand)"/>`;
+        lines += `<polyline points="${fmt(p)}" fill="none" stroke="var(--coast)" stroke-width="1.6" stroke-linejoin="round"/>`;
+      }
+      continue;
+    }
+    // Un solo tratto continuo, dal primo all'ultimo punto vicino allo spot (+1 per lato): se la costa
+    // esce e rientra dal cerchio (porti, moli, penisole) non va spezzata in poligoni separati.
+    const inside = p.map((q, k) => dist(q) < near ? k : -1).filter(k => k >= 0);
+    const runs = inside.length ? [p.slice(Math.max(0, inside[0] - 1), Math.min(p.length, inside.at(-1) + 2))] : [];
+    for (const run of runs) {
+      if (run.length < 2) continue;
+      // Un tratto che comincia o finisce dentro il cerchio (moli mappati come costa, dati tronchi)
+      // non si può chiudere in modo affidabile: lo disegno solo come linea.
+      if (dist(run[0]) < R || dist(run.at(-1)) < R) {
+        lines += `<polyline points="${fmt(run)}" fill="none" stroke="var(--coast)" stroke-width="1.6" stroke-linejoin="round"/>`;
+        continue;
+      }
+      const d0 = unit(run[1], run[0]), d1 = unit(run.at(-2), run.at(-1));
+      const s = [run[0][0] + d0[0] * far, run[0][1] + d0[1] * far];
+      const e = [run.at(-1)[0] + d1[0] * far, run.at(-1)[1] + d1[1] * far];
+      const left = d => [d[1], -d[0]];            // sinistra del verso di percorrenza (y verso il basso)
+      const l1 = left(d1), l0 = left([-d0[0], -d0[1]]);
+      const poly = [s, ...run, e, [e[0] + l1[0] * far, e[1] + l1[1] * far], [s[0] + l0[0] * far, s[1] + l0[1] * far]];
+      land += `<polygon points="${fmt(poly)}" fill="var(--sand)"/>`;
+      lines += `<polyline points="${fmt(run)}" fill="none" stroke="var(--coast)" stroke-width="1.6" stroke-linejoin="round"/>`;
+    }
+  }
+  const piers = coast.piers.map(pp => `<polyline points="${fmt(pp.map(xy))}" fill="none" stroke="var(--coast)" stroke-width="2.6" stroke-linecap="round"/>`).join("");
+  return land + lines + piers;
+}
+
+const ROSE_C = 130, ROSE_R = 112;
+const rosePt = (deg, r) => [ROSE_C + r * Math.sin(deg * Math.PI / 180), ROSE_C - r * Math.cos(deg * Math.PI / 180)];
+const SHORT = {
+  ecmwf_wam: "ECMWF", cmems_medwav: "Copernicus", ewam: "EWAM", meteofrance_wave: "MeteoFr", ncep_gfswave016: "GFS",
+  ecmwf_wam025: "ECMWF25", ncep_gfswave025: "GFS25", gwam: "GWAM", italia_meteo_arpae_icon_2i: "ICON-2I",
+  meteofrance_arome_france: "AROME", knmi_harmonie_arome_europe: "HARM-K", dmi_harmonie_arome_europe: "HARM-D",
+  icon_eu: "ICON-EU", ecmwf_ifs: "ECMWF", ecmwf_ifs025: "ECMWF25", ecmwf_aifs025_single: "AIFS",
+  meteofrance_arpege_europe: "ARPEGE", ukmo_global_deterministic_10km: "UKMO", gfs_seamless: "GFS",
+};
+const arrowAngles = {};
+
+// Frecce persistenti: a ogni cambio d'ora ruotano (animazione CSS) invece di essere ridisegnate.
+function updateArrows(h, models) {
+  const layer = document.getElementById("arrows"), labels = document.getElementById("labels");
+  if (!layer) return;
+  const c = ROSE_C, i = state.i, items = [];
+  if (models) {
+    for (const [id, v] of Object.entries(models.swell))
+      items.push({ key: "s-" + id, dir: v[i]?.[2], len: v[i] && Math.min(88, v[i][0] * 44), color: "var(--swell)", w: 1.6, op: .55,
+                   label: `S·${SHORT[id] || id}`, value: v[i] && `${fH(v[i][0])}${H_UNIT} ${f(v[i][1], 0)}s` });
+    for (const [id, v] of Object.entries(models.wave)) if (!models.swell[id])
+      items.push({ key: "t-" + id, dir: v[i]?.[2], len: v[i] && Math.min(88, v[i][0] * 44), color: "var(--swell-soft)", w: 1.6, op: .55,
+                   label: `S·${SHORT[id] || id}`, value: v[i] && `${fH(v[i][0])}${H_UNIT} ${f(v[i][1], 0)}s`, dash: true });
+    for (const [id, v] of Object.entries(models.wind))
+      items.push({ key: "w-" + id, dir: v[i]?.[2], len: v[i] && Math.min(92, 16 + v[i][0] * 2.6), color: "var(--wind)", w: 2, op: .75,
+                   label: `W·${SHORT[id] || id}`, value: v[i] && `${fW(v[i][0])}${W_UNIT}` });
+  }
+  items.push({ key: "mean-swell", dir: h ? (h.sd ?? h.d) : null, len: h && Math.min(92, (h.sh ?? h.h) * 46), color: "var(--swell)", w: 5, op: 1 });
+  items.push({ key: "mean-wind", dir: h?.wd, len: h && Math.min(96, 16 + h.ws * 2.8), color: "var(--wind)", w: 5, op: 1 });
+
+  // Medie spesse ed etichettate; i singoli modelli come frecce sottili e chiare, senza scritte
+  // (i loro valori stanno nell'elenco sotto la mappa).
+  for (const it of items) {
+    if (!it.key.startsWith("mean")) { it.w = 1.3; it.op = .3; }
+    let g = layer.querySelector(`[data-key="${it.key}"]`);
+    if (!g) {
+      g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("class", "arrow");
+      g.dataset.key = it.key;
+      g.style.transformOrigin = `${c}px ${c}px`;
+      const hw = 3 + it.w;
+      g.innerHTML = `<line x1="${c}" x2="${c}" y2="${c - 16}" stroke="${it.color}" stroke-width="${it.w}" stroke-linecap="round" ${it.dash ? 'stroke-dasharray="4 3"' : ""}/>
+        <path d="M${c},${c - 15} L${c - hw},${c - 17 - hw * 2.4} L${c + hw},${c - 17 - hw * 2.4} Z" fill="${it.color}"/>`;
+      g.setAttribute("opacity", it.op);
+      // le medie sopra, i modelli sotto
+      it.key.startsWith("mean") ? layer.appendChild(g) : layer.insertBefore(g, layer.firstChild);
+    }
+    if (it.dir == null) { g.style.display = "none"; continue; }
+    g.style.display = "";
+    // Ruota per la via più breve (niente giri completi passando da 359° a 0°)
+    const prev = arrowAngles[it.key] ?? it.dir;
+    const angle = prev + ((it.dir - prev + 540) % 360 - 180);
+    arrowAngles[it.key] = angle;
+    g.style.transform = `rotate(${angle}deg)`;
+    g.querySelector("line").setAttribute("y1", c - 16 - it.len);
+  }
+  const groups = [
+    { name: t("per_model_swell"), mean: items.find(x => x.key === "mean-swell"), rows: items.filter(x => /^[st]-/.test(x.key)),
+      title: h && `${t("map_swell")} ${fH(h.sh ?? h.h)} ${H_UNIT}` },
+    { name: t("per_model_wind"), mean: items.find(x => x.key === "mean-wind"), rows: items.filter(x => x.key.startsWith("w-")),
+      title: h && `${t("map_wind")} ${fW(h.ws)} ${W_UNIT}` },
+  ];
+  const clampX = x => Math.max(34, Math.min(226, x));
+  let svgLabels = "";
+  for (const { mean, title } of groups) {
+    if (mean.dir == null) continue;
+    const [mx, my] = rosePt(mean.dir, 16 + mean.len + 11);
+    svgLabels += `<text class="lbl big" x="${clampX(mx).toFixed(1)}" y="${(my + 3).toFixed(1)}" fill="${mean.color}" text-anchor="middle">${title}</text>`;
+  }
+  labels.innerHTML = svgLabels;
+
+  const list = document.getElementById("model-list");
+  if (list) list.innerHTML = groups.map(({ name, rows }) => {
+    const shown = rows.filter(r => r.dir != null);
+    if (!shown.length) return "";
+    return `<div><h6>${name}</h6>${shown.map(r => `<div class="mrow" style="color:${r.color}">
+      ${arrowSvg(r.dir, r.color)}<span>${r.label.slice(2)}</span><b>${r.value}</b><i>${compass(r.dir)}</i></div>`).join("")}</div>`;
+  }).join("");
+}
+
+function roseBase(spot) {
+  const c = ROSE_C, R = ROSE_R, pt = rosePt;
+  const coast = coastCache[spot.id];
+  let base;
+  if (coast && coast.coast.length) base = coastMap(spot, coast, c, R);
+  else {
+    const land = (spot.facing + 180) % 360, [ax, ay] = pt(land - 90, R), [bx, by] = pt(land + 90, R);
+    base = `<path d="M${ax},${ay} A${R},${R} 0 0 1 ${bx},${by} Z" fill="var(--sand)"/>
+            <line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="var(--coast)" stroke-width="1.6"/>`;
+  }
+  const ticks = [COMPASS[0], COMPASS[4], COMPASS[8], COMPASS[12]].map((l, k) => { const [x, y] = pt(k * 90, R + 11); return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-family="IBM Plex Mono" font-weight="600" font-size="11" fill="var(--ink-soft)">${l}</text>`; }).join("");
+  return `<svg viewBox="0 0 260 270" role="img" aria-label="Mappa di ${spot.name} con swell e vento">
+    <defs>
+      <clipPath id="clip-hero"><circle cx="${c}" cy="${c}" r="${R}"/></clipPath>
+    </defs>
+    <circle cx="${c}" cy="${c}" r="${R}" fill="var(--water)"/>
+    <g clip-path="url(#clip-hero)">${base}</g>
+    <circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="var(--line-strong)"/>
+    <circle cx="${c}" cy="${c}" r="${R * .5}" fill="none" stroke="var(--line)" stroke-dasharray="2 4"/>
+    <g id="arrows"></g><g id="labels"></g>
+    <circle cx="${c}" cy="${c}" r="6" fill="var(--ink)" stroke="var(--paper)" stroke-width="2"/>
+    ${ticks}
+    <g font-family="Work Sans" font-size="10" fill="var(--ink-soft)">
+      <line x1="40" y1="${2 * c + 2}" x2="56" y2="${2 * c + 2}" stroke="var(--swell)" stroke-width="3"/><text x="60" y="${2 * c + 5}">${t("legend_swell")}</text>
+      <line x1="104" y1="${2 * c + 2}" x2="120" y2="${2 * c + 2}" stroke="var(--wind)" stroke-width="3"/><text x="124" y="${2 * c + 5}">${t("legend_wind")}</text>
+      <text x="${2 * c - 34}" y="${2 * c + 5}" text-anchor="end" font-size="8" fill="var(--ink-faint)">${coast && coast.coast.length ? "2.5 km · © OSM" : ""}</text>
+    </g>
+  </svg>`;
+}
+
+async function ensureSpotData(id) {
+  if (modelCache[id]) return;
+  [modelCache[id], coastCache[id]] = await Promise.all([
+    getJSON(API.models(id)),
+    fetch(API.coast(id)).then(r => r.ok ? r.json() : null),
+  ]);
+  render();
+}
+
+// ---------- Render ----------
+function ring(r) {
+  const C = 2 * Math.PI * 44, frac = Math.max(0, Math.min(1, r / 5));
+  return `<div class="ring"><svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line)" stroke-width="8"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="${scoreColor(r)}" stroke-width="8" stroke-linecap="round"
+        stroke-dasharray="${C * frac} ${C}"/></svg>
+    <div class="val"><div><span>${f(r)}</span><small>${t("out_of5")}</small></div></div></div>`;
+}
+
+function render() {
+  const i = state.i, when = fmtTime(data.times[i]), isNight = data.night[i];
+  const list = ranked(i);
+  const spot = state.pinned ? data.spots.find(s => s.id === state.pinned) : list[0];
+  const h = spot && spot.hours[i];
+
+  let nightNote = "";
+  if (isNight) {
+    const k = nextDaylight(i);
+    nightNote = `<span class="pill night">${t("night_light", { h: fmtTime(data.times[k]).hour })}</span>`;
+  }
+  $("when").innerHTML = `<h2>${when.day.charAt(0).toUpperCase() + when.day.slice(1)}</h2>
+    <span class="sub">${t("at_hour")} <b style="font-family:var(--mono);color:var(--foam)">${when.hour}</b></span>
+    ${isNight ? nightNote : `<span class="pill">${t("day")}</span>`}`;
+
+  renderSpotChips(list);
+  if (!spot) return;
+  ensureSpotData(spot.id);
+  // La mappa si ridisegna solo cambiando spot (o all'arrivo della costa): le frecce invece ruotano.
+  const mapKey = spot.id + (coastCache[spot.id] ? ":coast" : "");
+  if (mapKey !== renderedMap) {
+    $("hero-map").innerHTML = roseBase(spot) + `<div class="model-list" id="model-list"></div>`;
+    renderedMap = mapKey;
+    for (const k in arrowAngles) delete arrowAngles[k];
+  }
+  updateArrows(h, modelCache[spot.id]);
+  if (!h) {
+    $("hero-main").innerHTML = `<div class="eyebrow">${spot.name}</div><p class="verdict">${t("no_forecast")}</p>`;
+    return;
+  }
+  const pinnedNote = state.pinned ? `<button class="back" id="back">${t("show_best")}</button>` : "";
+  const rank = list.indexOf(spot) + 1;
+  $("hero").className = "hero" + (isNight ? " is-night" : "");
+  const nothing = !state.pinned && surfLevel(h) === "no";  // il migliore non è surfabile: nessuno lo è
+  $("hero-main").innerHTML = `${pinnedNote}
+      <div>
+        ${nothing ? `<div class="nosurf">✕ ${t("nothing_surfable")}</div>` : ""}
+        <div class="eyebrow">${state.pinned ? t("chosen_spot", { r: rank, n: list.length }) : t(nothing ? "least_bad" : "best_spot")}</div>
+        <div class="hero-title">${ring(h.r)}
+          <div><h3>${spot.name} ${routeLink(spot)}</h3>${surfBadge(h, true)}<div class="verdict"><b>${verdict(h.rc ?? h.r, h.why)}</b> · ${t("wind_word")} <span class="chip ${h.rel}">${h.rel}</span></div>
+            <div class="qual">${t("q_conditions")} <b>${f(h.rc ?? h.r)}</b> · <button type="button" data-quality>${t("q_spot")}
+              <b>${f(spotQuality(spot))}</b>/5${myQuality[spot.id] != null ? ` (${t("q_mine")})` : ""}</button></div></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><label>${t("wave")}</label><div class="v">${fH(h.h)}<small>${H_UNIT}</small></div><div class="x">${t("models_range", { a: fH(h.hr[0]), b: fH(h.hr[1]), u: H_UNIT })}</div>${trendChip(h)}</div>
+        <div class="stat"><label>${t("period")}</label><div class="v">${f(h.p)}<small>s</small></div><div class="x">${t(h.p >= 7 ? "p_long" : h.p >= 5.5 ? "p_mid" : "p_short")}</div></div>
+        <div class="stat"><label>${t("swell")}</label><div class="v">${arrowSvg(h.sd ?? h.d, "var(--swell)")}${fH(h.sh ?? h.h)}<small>${H_UNIT}</small></div><div class="x">${t("from", { p: f(h.sp), d: compass(h.sd ?? h.d) })}</div></div>
+        <div class="stat"><label>${t("wind")}</label><div class="v">${arrowSvg(h.wd, "var(--wind)")}${fW(h.ws)}<small>${W_UNIT}</small></div><div class="x">${t("gusts", { g: fW(h.wg) })} · ${windName(h.wd)}</div></div>
+      </div>
+      ${h.tw != null || h.ta != null ? `<div class="temps">
+        ${h.ta != null ? `<span>${t("air")} <b>${f(h.ta, 0)}°</b></span>` : ""}
+        ${h.tw != null ? `<span>${t("water")} <b>${f(h.tw, 0)}°</b></span><span class="chip suit">${t("suit")}: ${wetsuit(h.tw, h.ta)}</span>` : ""}
+      </div>` : ""}
+      <div class="agree">
+        <span><span class="chip agree-${agreement(h)}">${t("agree_" + agreement(h))}</span>
+          ${t("agree_count", { a: h.nw, b: h.nv })}</span>
+        <span>${t("wind_range", { a: fW(h.wr[0]), b: fW(h.wr[1]), u: W_UNIT })}</span>
+        <span>${t("wind_sea")} <b>${fH(h.ww)} ${H_UNIT}</b></span>
+      </div>
+      ${h.st ? `<div class="storm">${t("storm_warn", { n: h.st[0], t: h.st[1] })}</div>` : ""}
+      ${spot.description?.[LANG] || spot.description?.it ? `<p class="notes">${spot.description[LANG] || spot.description.it}</p>` : ""}
+      <div class="links">
+        ${(spot.webcams || []).map(w => `<a class="link-btn" href="${w.url}" target="_blank" rel="noopener">📷 ${w.label}</a>`).join("")}
+        ${historyOf(spot.id).length ? `<button class="link-btn" data-history="${spot.id}">${t("history_btn", { n: historyOf(spot.id).length })}</button>` : ""}
+        <button class="link-btn add" data-report="${spot.id}">${t("report_btn")}</button>
+      </div>
+      ${isNight ? `<div class="night-note">${t("night_note")}</div>` : ""}`;
+  if (state.pinned) $("back").onclick = () => pin(null);
+
+  const alts = list.filter(s => s !== spot);
+  $("alts").innerHTML = alts.map(s => {
+    const a = s.hours[i], pos = list.indexOf(s) + 1;
+    return `<div class="alt" data-spot="${s.id}">
+      <div class="row"><div class="mini" style="background:${scoreColor(a.r)};color:${textOn(a.r)}">${f(a.r)}</div>
+        <div><div class="rank">#${pos}</div><h5>${s.name}</h5>${surfBadge(a)}</div></div>
+      <div class="meta"><span>${arrowSvg(a.sd ?? a.d, "var(--swell)")}<b>${fH(a.h)}</b> ${H_UNIT} · ${f(a.p)} s</span>
+        <span>${arrowSvg(a.wd, "var(--wind)")}<b>${fW(a.ws)}</b> ${W_UNIT}</span><span class="chip ${a.rel}">${a.rel}</span>${trendChip(a)}</div>
+    </div>`;
+  }).join("");
+
+  $("detail-title").textContent = spot.name;
+  $("detail-sub").textContent = t("detail_sub");
+  $("day-chart").innerHTML = dayChart(spot);
+  $("cmp").innerHTML = modelCache[spot.id] ? cmpTable(spot.id) : `<p class="foot">${t("cmp_loading")}</p>`;
+  const sel = $("cmp").querySelector("th.sel");
+  if (sel) $("cmp").scrollLeft = sel.offsetLeft - $("cmp").clientWidth / 2;
+}
+
+function dayChart(spot) {
+  // Le 24 ore del giorno selezionato (o fino alla fine dei dati)
+  const i = state.i, day = data.times[i].slice(0, 10);
+  const idx = data.times.map((tm, k) => tm.slice(0, 10) === day ? k : -1).filter(k => k >= 0);
+  const W = 1000, H = 150, pad = 22, cw = W / 24;
+  const hourOf = k => new Date(data.times[k]).getHours();
+  let night = "", pts = [], labels = "";
+  for (let hr = 0; hr < 24; hr++) labels += hr % 3 === 0 ? `<text x="${hr * cw + cw / 2}" y="${H - 4}" text-anchor="middle" font-family="IBM Plex Mono" font-size="20" fill="var(--ink-faint)">${String(hr).padStart(2, "0")}</text>` : "";
+  for (const k of idx) {
+    const x = hourOf(k) * cw;
+    if (data.night[k]) night += `<rect x="${x}" y="0" width="${cw}" height="${H - pad}" fill="var(--night)"/>`;
+    const h = spot.hours[k];
+    if (h) pts.push([x + cw / 2, (H - pad - 8) - (h.r / 5) * (H - pad - 22), h.r, k]);
+  }
+  const line = pts.map(p => p.slice(0, 2).join(",")).join(" ");
+  const area = pts.length ? `M${pts[0][0]},${H - pad} L${line.replaceAll(" ", " L")} L${pts.at(-1)[0]},${H - pad} Z` : "";
+  const dots = pts.map(([x, y, r, k]) => `<circle cx="${x}" cy="${y}" r="${k === i ? 9 : 4}" fill="${scoreColor(r)}" ${k === i ? 'stroke="var(--paper-2)" stroke-width="3"' : ""}/>`).join("");
+  const hit = idx.map(k => `<rect x="${hourOf(k) * cw}" y="0" width="${cw}" height="${H}" fill="transparent" data-k="${k}"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Voto ora per ora">
+    <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--swell)" stop-opacity=".45"/><stop offset="1" stop-color="var(--swell)" stop-opacity="0"/></linearGradient></defs>
+    ${night}
+    ${[1, 2, 3, 4].map(v => `<line x1="0" x2="${W}" y1="${(H - pad - 8) - (v / 5) * (H - pad - 22)}" y2="${(H - pad - 8) - (v / 5) * (H - pad - 22)}" stroke="var(--line)"/>`).join("")}
+    <path d="${area}" fill="url(#area)"/>
+    <polyline points="${line}" fill="none" stroke="var(--swell)" stroke-width="3" stroke-linejoin="round"/>
+    ${dots}${labels}${hit}
+  </svg>`;
+}
+
+function cmpTable(spotId) {
+  // Di giorno ogni ora (per trovare la finestra migliore), di notte ogni 3 ore
+  const m = modelCache[spotId], i = state.i;
+  const cols = m.times.map((_, k) => k).filter(k => k < data.times.length &&
+    (!data.night[k] || new Date(m.times[k]).getHours() % 3 === 0));
+  const selCol = cols.filter(k => k <= i).at(-1) ?? cols[0];
+  const days = []; cols.forEach((k, j) => { if (j === 0 || m.times[k].slice(0, 10) !== m.times[cols[j - 1]].slice(0, 10)) days.push(j); });
+  const dayHead = days.map((j, n) => {
+    const span = (n + 1 < days.length ? days[n + 1] : cols.length) - j;
+    return `<th class="day" colspan="${span}">${fmtTime(m.times[cols[j]]).short}</th>`;
+  }).join("");
+  const hourHead = cols.map(k => `<th class="${k === selCol ? "sel" : ""}" data-k="${k}">${m.times[k].slice(11, 13)}</th>`).join("");
+  const row = (group, kind) => Object.entries(group).map(([id, vals]) => `<tr><td class="lab">${MODEL_NAMES[id] || id}</td>${cols.map(k => {
+    const v = vals[k], cls = `v${k === selCol ? " sel" : ""}`;
+    if (!v) return `<td class="${cls}" data-k="${k}"></td>`;
+    if (kind === "wind") return `<td class="${cls}" data-k="${k}" style="background:${windColor(v[0])}">${arrowSvg(v[2], "var(--wind)")}${fW(v[0])}<small>${fW(v[1])}</small></td>`;
+    return `<td class="${cls}" data-k="${k}" style="background:${scoreColor(Math.min(5, v[0] * 2.4))};color:${textOn(Math.min(5, v[0] * 2.4))}">${arrowSvg(v[2])}${fH(v[0])}<small>${f(v[1], 0)}s</small></td>`;
+  }).join("")}</tr>`).join("");
+  const n = cols.length + 1;
+  return `<table class="cmp">
+    <tr><th class="lab"></th>${dayHead}</tr><tr><th class="lab" style="color:var(--mist)">${t("cmp_hour")}</th>${hourHead}</tr>
+    <tr class="group"><td colspan="${n}">${t("cmp_wave", { u: H_UNIT })}</td></tr>${row(m.wave, "wave")}
+    <tr class="group"><td colspan="${n}">${t("cmp_swell", { u: H_UNIT })}</td></tr>${row(m.swell, "wave")}
+    <tr class="group"><td colspan="${n}">${t("cmp_wind", { u: W_UNIT })}</td></tr>${row(m.wind, "wind")}
+  </table>`;
+}
+
+document.addEventListener("click", e => {
+  const hist = e.target.closest("[data-history]");
+  if (hist) { openHistory(hist.dataset.history); return; }
+  const rep = e.target.closest("[data-report]");
+  if (rep) { openReport(rep.dataset.report); return; }
+  if (e.target.closest("[data-quality]")) { openQuality(); return; }
+  const lv = e.target.closest("[data-level]");
+  if (lv) { setLevel(lv.dataset.level); return; }
+  if (e.target.closest("[data-close]") || ["history", "report", "quality"].includes(e.target.id)) {
+    $("history").hidden = true; $("report").hidden = true; $("quality").hidden = true; return;
+  }
+  if (e.target.closest("#report, #quality")) return;  // clic dentro un modulo: niente scorciatoie della pagina
+  const chip = e.target.closest("[data-pin]");
+  if (chip) { pin(chip.dataset.pin); return; }
+  const alt = e.target.closest(".alt");
+  if (alt) { pin(alt.dataset.spot); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  const k = e.target.closest("[data-k]");
+  if (k) select(Number(k.dataset.k));
+});
+
+// I dati cambiano ogni poche ore: "no-cache" fa chiedere sempre al server se sono cambiati (GitHub Pages e
+// i browser del telefono altrimenti tengono la copia vecchia), scaricandoli solo se sono nuovi.
+const getJSON = url => fetch(url, { cache: "no-cache" }).then(r => r.json());
+
+// Pagina rimasta aperta (telefono): quando torna in primo piano, se ci sono previsioni nuove si ricarica.
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState !== "visible" || !data) return;
+  try {
+    const fresh = await getJSON(API.timeline);
+    if (fresh.generated !== data.generated) location.reload();
+  } catch {}
+});
+
+(async () => {
+  [data, sessions] = await Promise.all([getJSON(API.timeline), API.sessions ? getJSON(API.sessions) : []]);
+  renderLevel();
+  applyQuality();
+  buildTimeline();
+  timelineEvents();
+  select(nextDaylight(0));
+  connectShared();  // pagina condivisa: segnalazioni degli amici (si accende quando l'archivio risponde)
+})();
+</script>
+</body>
+</html>
